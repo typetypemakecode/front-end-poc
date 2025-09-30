@@ -1,0 +1,19 @@
+{
+  "smartLists": [
+    { "key": "inbox", "iconName": "Inbox", "title": "Inbox", "count": 10, "priority": "low" },
+    { "key": "today", "iconName": "Calendar", "title": "Today", "count": 0, "priority": "medium" },
+    { "key": "upcoming", "iconName": "CalendarDays", "title": "Upcoming", "count": 0, "priority": "low" },
+    { "key": "tags", "iconName": "Tag", "title": "Tags", "count": 0, "priority": "low" },
+    { "key": "past_due", "iconName": "TriangleAlert", "title": "Past Due", "count": 0, "priority": "high" }
+  ],
+  "areas": [
+    { "key": "work", "iconName": "Briefcase", "title": "Work", "count": 5, "priority": "medium", "showCount": false },
+    { "key": "home", "iconName": "House", "title": "Home", "count": 8, "priority": "high", "showCount": false },
+    { "key": "health", "iconName": "Activity", "title": "Health", "count": 2, "priority": "low", "showCount": false }
+  ],
+  "projects": [
+    { "key": "ios_app", "iconName": "Smartphone", "title": "IOS App", "count": 5, "priority": "medium", "showCount": false },
+    { "key": "website", "iconName": "Globe", "title": "Website", "count": 8, "priority": "high", "showCount": false },
+    { "key": "marketing", "iconName": "Megaphone", "title": "Marketing", "count": 2, "priority": "low", "showCount": false }
+  ]
+}
