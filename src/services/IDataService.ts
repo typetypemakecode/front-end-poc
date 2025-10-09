@@ -1,4 +1,5 @@
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
+import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
 
 /**
  * Interface for data service implementations
@@ -40,4 +41,49 @@ export interface IDataService {
    * @returns 'api' | 'local'
    */
   getDataSourceMode(): 'api' | 'local';
+
+  // Task operations
+
+  /**
+   * Gets all tasks, optionally filtered by list ID
+   * @param listId - Optional ID of smart list, area, or project to filter by
+   * @returns Promise<TaskData[]>
+   */
+  getTasks(listId?: string, status?: 'active' | 'completed', page?: number, limit?: number): Promise<TaskData[]>;
+
+  /**
+   * Gets task counts by status
+   * @param listId - Optional ID of smart list, area, or project to filter by
+   * @returns Promise<TaskCounts>
+   */
+  getTaskCounts(listId?: string): Promise<TaskCounts>;
+
+  /**
+   * Gets a single task by ID
+   * @param id - The task ID
+   * @returns Promise<TaskData | null>
+   */
+  getTask(id: string): Promise<TaskData | null>;
+
+  /**
+   * Creates a new task
+   * @param task - Task data without id, createdAt, updatedAt
+   * @returns Promise<TaskData> - The newly created task
+   */
+  createTask(task: CreateTaskInput): Promise<TaskData>;
+
+  /**
+   * Updates an existing task
+   * @param id - The task ID
+   * @param updates - Partial task data to update
+   * @returns Promise<TaskData> - The updated task
+   */
+  updateTask(id: string, updates: UpdateTaskInput): Promise<TaskData>;
+
+  /**
+   * Deletes a task
+   * @param id - The task ID
+   * @returns Promise<void>
+   */
+  deleteTask(id: string): Promise<void>;
 }

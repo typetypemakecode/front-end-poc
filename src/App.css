@@ -41,6 +41,9 @@
   --color-priority-medium: #23ce6b;
   --color-priority-low: #50514f;
   --color-glow-emerald: rgba(35, 206, 107, 0.3);
+  --color-tag-purple: rgba(80, 81, 79, 0.2);
+  --color-tag-gray: rgba(80, 81, 79, 0.2);
+  --color-tag-green: rgba(35, 206, 107, 0.2);
 
 /* typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
