@@ -7,14 +7,25 @@ import type { SidebarItemData, SidebarConfigData } from '../types/sidebar'
 import Modal from './modal'
 import NewListForm from './new-list-form'
 
-export default function Sidebar() {
-    const [selectedId, setSelectedId] = useState('inbox');
+interface SidebarProps {
+    refreshKey?: number;
+    onListSelect?: (listId: string) => void;
+}
+
+export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
+    const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [sidebarData, setSidebarData] = useState<SidebarConfigData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const handleItemClick = (key: string) => {
-        setSelectedId(key);
+        // Toggle: if clicking same item, deselect
+        const newSelectedId = selectedId === key ? null : key;
+        setSelectedId(newSelectedId);
+
+        if (onListSelect) {
+            onListSelect(key);
+        }
     };
 
     const handleNewListClick = () => {
@@ -45,7 +56,7 @@ export default function Sidebar() {
         setIsNewListModalOpen(false);
     }
 
-    // Load sidebar data on component mount
+    // Load sidebar data on component mount and when refreshKey changes
     useEffect(() => {
         const loadSidebarData = async () => {
             try {
@@ -62,7 +73,7 @@ export default function Sidebar() {
         };
 
         loadSidebarData();
-    }, []);
+    }, [refreshKey]);
 
     // Helper function to map API data to component props with icons and selection state
     const mapToListItems = (items: SidebarItemData[]) => {
