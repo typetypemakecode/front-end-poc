@@ -1,5 +1,6 @@
 import type { IDataService } from './IDataService';
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
+import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
 import sidebarConfigData from '../data/sidebarConfig.json';
 
 /**
@@ -10,6 +11,7 @@ import sidebarConfigData from '../data/sidebarConfig.json';
 export class ApiDataService implements IDataService {
   private baseUrl: string;
   private cachedData: SidebarConfigData;
+  private cachedTasks: TaskData[] = [];
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -128,5 +130,180 @@ export class ApiDataService implements IDataService {
   public setBaseUrl(url: string): void {
     this.baseUrl = url;
     console.log(`🔄 API base URL updated to: ${url}`);
+  }
+
+  // Task methods
+
+  async getTasks(listId?: string, status?: 'active' | 'completed', page?: number, limit?: number): Promise<TaskData[]> {
+    try {
+      const params = new URLSearchParams();
+      if (listId) params.append('listId', listId);
+      if (status) params.append('status', status);
+      if (page) params.append('page', page.toString());
+      if (limit) params.append('limit', limit.toString());
+      const queryString = params.toString();
+      const fullUrl = queryString ? `${this.baseUrl}/tasks?${queryString}` : `${this.baseUrl}/tasks`;
+
+      const response = await fetch(fullUrl);
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const tasks = await response.json();
+      // Update cache
+      this.cachedTasks = tasks;
+      console.log('✅ Tasks loaded from API');
+      return tasks;
+    } catch (error) {
+      console.error('❌ Failed to fetch tasks from API, using cached data:', error);
+
+      // Fallback to cached data with same filtering logic
+      let filtered = [...this.cachedTasks];
+
+      if (listId) {
+        filtered = filtered.filter(task => task.listId === listId);
+      }
+
+      if (status) {
+        filtered = filtered.filter(task => task.status === status);
+      }
+
+      return filtered;
+    }
+  }
+
+  async getTaskCounts(listId?: string): Promise<TaskCounts> {
+    try {
+      const params = new URLSearchParams();
+      if (listId) params.append('listId', listId);
+
+      const queryString = params.toString();
+      const url = queryString ? `${this.baseUrl}/tasks/counts?${queryString}` : `${this.baseUrl}/tasks/counts`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const counts = await response.json();
+      console.log('✅ Task counts loaded from API');
+      return counts;
+    } catch (error) {
+      console.error('❌ Failed to fetch task counts from API, calculating from cache:', error);
+
+      // Fallback to calculating counts from cached data
+      let filteredTasks = [...this.cachedTasks];
+
+      if (listId) {
+        filteredTasks = filteredTasks.filter(task => task.listId === listId);
+      }
+
+      return {
+        all: filteredTasks.length,
+        active: filteredTasks.filter(task => task.status === 'active').length,
+        completed: filteredTasks.filter(task => task.status === 'completed').length,
+        archived: filteredTasks.filter(task => task.status === 'archived').length,
+      };
+    }
+  }
+
+  async getTask(id: string): Promise<TaskData | null> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${id}`);
+
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const task = await response.json();
+      console.log('✅ Task loaded from API');
+      return task;
+    } catch (error) {
+      console.error('❌ Failed to fetch task from API, checking cache:', error);
+      // Fallback to cached data
+      const task = this.cachedTasks.find(task => task.id === id);
+      return task ? { ...task } : null;
+    }
+  }
+
+  async createTask(input: CreateTaskInput): Promise<TaskData> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const createdTask = await response.json();
+      // Update cache
+      this.cachedTasks.push(createdTask);
+      console.log('✅ Task created via API');
+      return createdTask;
+    } catch (error) {
+      console.error('❌ Failed to create task via API:', error);
+      throw error;
+    }
+  }
+
+  async updateTask(id: string, updates: UpdateTaskInput): Promise<TaskData> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const updatedTask = await response.json();
+      // Update cache
+      const taskIndex = this.cachedTasks.findIndex(task => task.id === id);
+      if (taskIndex !== -1) {
+        this.cachedTasks[taskIndex] = updatedTask;
+      }
+      console.log('✅ Task updated via API');
+      return updatedTask;
+    } catch (error) {
+      console.error('❌ Failed to update task via API:', error);
+      throw error;
+    }
+  }
+
+  async deleteTask(id: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Update cache
+      const taskIndex = this.cachedTasks.findIndex(task => task.id === id);
+      if (taskIndex !== -1) {
+        this.cachedTasks.splice(taskIndex, 1);
+      }
+      console.log('✅ Task deleted via API');
+    } catch (error) {
+      console.error('❌ Failed to delete task via API:', error);
+      throw error;
+    }
   }
 }
