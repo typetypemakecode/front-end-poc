@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
-import Task from './task'
+import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import SortableTask from './sortable-task'
 import { dataService } from '../services/dataService'
 import type { TaskData } from '../types/task'
 import { filterTasksByList } from '../utils/taskFilters'
@@ -14,6 +17,12 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const [tasks, setTasks] = useState<TaskData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Configure sensors for drag interaction
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor)
+    );
 
     // Load tasks from service when filterKey or selectedListId changes
     useEffect(() => {
@@ -68,26 +77,63 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
         }
     }
 
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (!over || active.id === over.id) {
+            return; // No change needed
+        }
+
+        // Find the old and new index
+        const oldIndex = tasks.findIndex(task => task.id === active.id);
+        const newIndex = tasks.findIndex(task => task.id === over.id);
+
+        // Reorder the tasks array
+        const reorderedTasks = arrayMove(tasks, oldIndex, newIndex);
+
+        // Optimistically update UI
+        setTasks(reorderedTasks);
+
+        try {
+            // Persist the new order to the backend
+            const taskIds = reorderedTasks.map(task => task.id);
+            await dataService.reorderTasks(taskIds);
+
+            // Refresh counts if needed
+            if (onCountsChange) {
+                await onCountsChange();
+            }
+        } catch (error) {
+            console.error('Failed to reorder tasks:', error);
+            // Revert on error
+            setTasks(tasks);
+        }
+    };
+
     if (isLoading) {
         return <div className="text-muted-foreground p-4">Loading tasks...</div>;
     }
 
     return (
-    <div>
-        {tasks.map(task => (
-            <Task
-                key={task.id}
-                id={task.id}
-                title={task.title}
-                description={task.description}
-                dueDate={task.dueDate}
-                tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
-                completed={task.status === 'completed'}
-                selected={selectedTaskId === task.id}
-                onclick={handleTaskClick}
-                onToggleComplete={handleToggleComplete}
-            />
-        ))}
-    </div>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+                <div>
+                    {tasks.map(task => (
+                        <SortableTask
+                            key={task.id}
+                            id={task.id}
+                            title={task.title}
+                            description={task.description}
+                            dueDate={task.dueDate}
+                            tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
+                            completed={task.status === 'completed'}
+                            selected={selectedTaskId === task.id}
+                            onclick={handleTaskClick}
+                            onToggleComplete={handleToggleComplete}
+                        />
+                    ))}
+                </div>
+            </SortableContext>
+        </DndContext>
     )
 }

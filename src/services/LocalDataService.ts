@@ -234,6 +234,15 @@ export class LocalDataService implements IDataService {
     if (status) {
       filteredTasks = filteredTasks.filter(task => task.status === status);
     }
+
+    // Sort by order field (tasks without order go to the end)
+    filteredTasks.sort((a, b) => {
+      if (a.order === undefined && b.order === undefined) return 0;
+      if (a.order === undefined) return 1;
+      if (b.order === undefined) return -1;
+      return a.order - b.order;
+    });
+
     if (page !== undefined && limit !== undefined) {
       const start = (page - 1) * limit;
       filteredTasks = filteredTasks.slice(start, start + limit);
@@ -263,6 +272,17 @@ export class LocalDataService implements IDataService {
 
   async createTask(input: CreateTaskInput): Promise<TaskData> {
     const now = new Date().toISOString();
+
+    // Auto-assign order if not provided
+    let order = input.order;
+    if (order === undefined) {
+      // Find max order value and add 1
+      const maxOrder = this.tasks.reduce((max, task) => {
+        return task.order !== undefined && task.order > max ? task.order : max;
+      }, -1);
+      order = maxOrder + 1;
+    }
+
     const newTask: TaskData = {
       id: this.generateTaskId(),
       title: input.title,
@@ -270,6 +290,7 @@ export class LocalDataService implements IDataService {
       priority: input.priority || 'medium',
       status: input.status || 'active',
       dueDate: input.dueDate,
+      order,
       listId: input.listId,
       tags: input.tags || [],
       createdAt: now,
@@ -310,11 +331,38 @@ export class LocalDataService implements IDataService {
     this.persistTasks();
   }
 
+  async reorderTasks(taskIds: string[]): Promise<void> {
+    // Validation: check for duplicates
+    const idSet = new Set(taskIds);
+    if (idSet.size !== taskIds.length) {
+      throw new Error('Duplicate task IDs in reorder list');
+    }
+
+    // Validation: ensure all task IDs exist
+    const currentIds = new Set(this.tasks.map(task => task.id));
+    for (const id of taskIds) {
+      if (!currentIds.has(id)) {
+        throw new Error(`Task ID ${id} not found in current tasks`);
+      }
+    }
+
+    // Update order field for each task based on position in array
+    taskIds.forEach((id, index) => {
+      const task = this.tasks.find(t => t.id === id);
+      if (task) {
+        task.order = index;
+        task.updatedAt = new Date().toISOString();
+      }
+    });
+
+    this.persistTasks();
+  }
+
   /**
    * Generates a unique ID for a new task
    */
   private generateTaskId(): string {
-    return `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `task-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
