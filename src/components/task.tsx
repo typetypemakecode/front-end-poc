@@ -5,7 +5,7 @@ import { Circle, CircleCheckBig } from "lucide-react"
         theme?: 'emerald' | 'purple';
     }
 
-    type TaskProps = {
+    export type TaskProps = {
         id: string;
         title: string;
         description?: string;
@@ -16,9 +16,10 @@ import { Circle, CircleCheckBig } from "lucide-react"
         selected?: boolean;
         onclick?: (id: string) => void;
         onToggleComplete?: (id: string) => void;
+        dragHandle?: React.ReactNode;
     }
 
-export default function Task({ id, title, description, dueDate, assignee, tags, completed, selected, onclick, onToggleComplete }: TaskProps) {
+export default function Task({ id, title, description, dueDate, assignee, tags, completed, selected, onclick, onToggleComplete, dragHandle }: TaskProps) {
 
     const handleCircleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering the task selection
@@ -28,6 +29,7 @@ export default function Task({ id, title, description, dueDate, assignee, tags, 
     return (
         <div className={`p-4 mt-6 ${selected ? 'bg-task-selected border border-primary shadow-glow-emerald' : 'bg-card border border-border'} rounded ${completed ? 'opacity-60' : ''} transition-opacity cursor-pointer`} onClick={() => onclick?.(id)}>
             <div className="flex items-start gap-3">
+                {dragHandle && <div className="flex items-center">{dragHandle}</div>}
                 <button onClick={handleCircleClick} className="hover:scale-110 transition-transform">
                     {completed ? <CircleCheckBig className="text-accent" /> : <Circle />}
                 </button>

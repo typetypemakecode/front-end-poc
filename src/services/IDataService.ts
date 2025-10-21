@@ -86,4 +86,12 @@ export interface IDataService {
    * @returns Promise<void>
    */
   deleteTask(id: string): Promise<void>;
+
+  /**
+   * Reorders tasks based on provided array of task IDs
+   * @param taskIds - Array of task IDs in the new order
+   * @returns Promise<void>
+   */
+  reorderTasks(taskIds: string[]): Promise<void>;
+
 }

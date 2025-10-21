@@ -169,6 +169,14 @@ export class ApiDataService implements IDataService {
         filtered = filtered.filter(task => task.status === status);
       }
 
+      // Sort by order field (tasks without order go to the end)
+      filtered.sort((a, b) => {
+        if (a.order === undefined && b.order === undefined) return 0;
+        if (a.order === undefined) return 1;
+        if (b.order === undefined) return -1;
+        return a.order - b.order;
+      });
+
       return filtered;
     }
   }
@@ -303,6 +311,36 @@ export class ApiDataService implements IDataService {
       console.log('✅ Task deleted via API');
     } catch (error) {
       console.error('❌ Failed to delete task via API:', error);
+      throw error;
+    }
+  }
+
+  async reorderTasks(taskIds: string[]): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/reorder`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ taskIds }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Update cache: set order field for reordered tasks
+      taskIds.forEach((id, index) => {
+        const task = this.cachedTasks.find(t => t.id === id);
+        if (task) {
+          task.order = index;
+          task.updatedAt = new Date().toISOString();
+        }
+      });
+
+      console.log('✅ Tasks reordered via API');
+    } catch (error) {
+      console.error('❌ Failed to reorder tasks via API:', error);
       throw error;
     }
   }
