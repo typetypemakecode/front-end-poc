@@ -23,18 +23,21 @@ export interface IDataService {
    * @param title - The title of the new area
    * @param iconName - The icon name from lucide-react
    * @param priority - The priority level
+   * @param description - Optional description for the area
    * @returns Promise<SidebarItemData> - The newly created area
    */
-  addArea(title: string, iconName?: string, priority?: Priority): Promise<SidebarItemData>;
+  addArea(title: string, iconName?: string, priority?: Priority, description?: string): Promise<SidebarItemData>;
 
   /**
    * Adds a new project to the sidebar configuration
    * @param title - The title of the new project
    * @param iconName - The icon name from lucide-react
    * @param priority - The priority level
+   * @param description - Optional description for the project
+   * @param dueDate - Optional due date for the project (ISO format: YYYY-MM-DD)
    * @returns Promise<SidebarItemData> - The newly created project
    */
-  addProject(title: string, iconName?: string, priority?: Priority): Promise<SidebarItemData>;
+  addProject(title: string, iconName?: string, priority?: Priority, description?: string, dueDate?: string): Promise<SidebarItemData>;
 
   /**
    * Gets the current data source mode

@@ -7,8 +7,10 @@ export interface SidebarItemData {
     key: string;
     iconName: string;
     title: string;
+    description?: string;
     count: number;
     priority: Priority;
+    dueDate?: string;
     showCount?: boolean;
 }
 

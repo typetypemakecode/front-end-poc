@@ -7,13 +7,13 @@
     { "key": "past_due", "iconName": "TriangleAlert", "title": "Past Due", "count": 0, "priority": "high" }
   ],
   "areas": [
-    { "key": "work", "iconName": "Briefcase", "title": "Work", "count": 5, "priority": "medium", "showCount": false },
-    { "key": "home", "iconName": "House", "title": "Home", "count": 8, "priority": "high", "showCount": false },
-    { "key": "health", "iconName": "Activity", "title": "Health", "count": 2, "priority": "low", "showCount": false }
+    { "key": "work", "iconName": "Briefcase", "title": "Work", "description": "Professional tasks, meetings, and career development", "count": 5, "priority": "medium", "showCount": false },
+    { "key": "home", "iconName": "House", "title": "Home", "description": "Household chores, maintenance, and family activities", "count": 8, "priority": "high", "showCount": false },
+    { "key": "health", "iconName": "Activity", "title": "Health", "description": "Fitness routines, medical appointments, and wellness goals", "count": 2, "priority": "low", "showCount": false }
   ],
   "projects": [
-    { "key": "ios_app", "iconName": "Smartphone", "title": "IOS App", "count": 5, "priority": "medium", "showCount": false },
-    { "key": "website", "iconName": "Globe", "title": "Website", "count": 8, "priority": "high", "showCount": false },
-    { "key": "marketing", "iconName": "Megaphone", "title": "Marketing", "count": 2, "priority": "low", "showCount": false }
+    { "key": "ios_app", "iconName": "Smartphone", "title": "IOS App", "description": "Launch minimum viable product for task management app", "dueDate": "2025-12-15", "count": 5, "priority": "medium", "showCount": false },
+    { "key": "website", "iconName": "Globe", "title": "Website", "description": "Redesign company website with new branding and content", "dueDate": "2025-11-30", "count": 8, "priority": "high", "showCount": false },
+    { "key": "marketing", "iconName": "Megaphone", "title": "Marketing", "description": "Q4 marketing campaign and social media strategy", "dueDate": "2025-12-31", "count": 2, "priority": "low", "showCount": false }
   ]
 }

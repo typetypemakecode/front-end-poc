@@ -9,9 +9,11 @@ type ListProps = {
         key: string;
         icon: ComponentType<{ className?: string }>;
         title: string;
+        description?: string;
         count: number;
         selected: boolean;
         priority?: 'low' | 'medium' | 'high';
+        dueDate?: string;
         showCount?: boolean;
     }[];
 }

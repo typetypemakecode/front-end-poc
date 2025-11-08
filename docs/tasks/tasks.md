@@ -3,7 +3,7 @@
 ## UI
 
 - [x] Restyle the new list modal to be less boilerplate
-- [] Work on the ui for the main content area
+- [x] Work on the ui for the main content area
 - [] right sidebar (task details)
 - [] Dashboard View
 
@@ -166,4 +166,41 @@ src/
 3. **Optimistic Updates**: Update UI immediately, rollback on failure
 4. **Request Cancellation**: Cancel in-flight requests on component unmount
 5. **Schema Validation**: Runtime validation of external data (API responses)
+
+---
+
+## Areas & Projects Enhancement: Descriptions and Due Dates
+
+### Phase 1: Foundation (Minimal disruption)
+- [x] Add `description?: string` field to `SidebarItemData` type (src/types/sidebar.ts)
+- [x] Add `dueDate?: string` field to `SidebarItemData` type (src/types/sidebar.ts)
+- [x] Update mock data in `src/data/sidebarConfig.json` with sample descriptions and due dates
+- [x] Enhance `NewListForm` component to include description textarea field
+- [x] Enhance `NewListForm` component to include due date picker (only for projects)
+- [x] Update `IDataService` interface with new optional parameters for `addArea()` and `addProject()`
+- [x] Update `LocalDataService` to persist description and due date fields
+- [x] Update `ApiDataService` to send description and due date to backend
+
+### Phase 2: Basic Display (Quick wins)
+- [ ] Show description as tooltip on sidebar item hover (sidebar-item.tsx)
+- [ ] Add small due date badge next to count for projects with due dates
+- [ ] Implement color-coded due date indicators (green: 7+ days, yellow: 2-7 days, orange: tomorrow, red: overdue)
+- [ ] Add subtle 🗒️ indicator icon for items that have descriptions
+- [ ] Style overdue projects with red icon tint or warning indicator
+- [ ] Add "days remaining" calculation utility for projects
+- [ ] Update sidebar item layout to accommodate new visual indicators
+
+### Phase 3: Rich Experience (Full feature set)
+- [ ] Create detail panel/modal component for viewing full area/project details
+- [ ] Add inline editing capability for descriptions and due dates
+- [ ] Implement progress indicators (X/Y tasks complete) for areas/projects
+- [ ] Add sorting options (by due date, by priority, by name) for projects
+- [ ] Add filtering options ("Show only overdue", "Show only with due dates")
+- [ ] Create visual timeline or calendar view for projects
+- [ ] Add project completion tracking (auto-suggest marking complete when all tasks done)
+- [ ] Add celebration animation when project is marked complete
+- [ ] Implement "Edit Details" option in context menu or detail view
+- [ ] Add ability to mark projects as complete/archived
+- [ ] Show creation date and last updated metadata
+- [ ] Support markdown formatting in descriptions (optional enhancement)
 
