@@ -32,12 +32,12 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
         setIsNewListModalOpen(true);
     }
 
-    const handleFormSubmit = async (type: 'area' | 'project', title: string) => {
+    const handleFormSubmit = async (type: 'area' | 'project', title: string, description: string, dueDate?: string) => {
         try {
             if (type === 'area') {
-                await dataService.addArea(title);
+                await dataService.addArea(title, undefined, undefined, description);
             } else {
-                await dataService.addProject(title);
+                await dataService.addProject(title, undefined, undefined, description, dueDate);
             }
 
             // Reload sidebar data to reflect the new item

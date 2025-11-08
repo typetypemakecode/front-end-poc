@@ -141,11 +141,12 @@ export class LocalDataService implements IDataService {
     return { ...this.localData };
   }
 
-  async addArea(title: string, iconName: string = 'Circle', priority: Priority = 'medium'): Promise<SidebarItemData> {
+  async addArea(title: string, iconName: string = 'Circle', priority: Priority = 'medium', description?: string): Promise<SidebarItemData> {
     const newArea: SidebarItemData = {
       key: this.generateKey(title),
       iconName,
       title,
+      description,
       count: 0,
       priority,
       showCount: false
@@ -157,13 +158,15 @@ export class LocalDataService implements IDataService {
     return newArea;
   }
 
-  async addProject(title: string, iconName: string = 'Folder', priority: Priority = 'medium'): Promise<SidebarItemData> {
+  async addProject(title: string, iconName: string = 'Folder', priority: Priority = 'medium', description?: string, dueDate?: string): Promise<SidebarItemData> {
     const newProject: SidebarItemData = {
       key: this.generateKey(title),
       iconName,
       title,
+      description,
       count: 0,
       priority,
+      dueDate,
       showCount: false
     };
 
