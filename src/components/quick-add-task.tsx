@@ -55,19 +55,29 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   }
 
   /**
+   * Format date in YYYY-MM-DD using local timezone
+   */
+  const formatLocalDate = (date: Date): string => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  /**
    * Get context-aware due date based on selected smart list
    */
   const getContextualDueDate = (): string | undefined => {
     if (selectedListId === 'today') {
-      // Set to today's date in YYYY-MM-DD format
-      return new Date().toISOString().split('T')[0]
+      // Set to today's date in YYYY-MM-DD format (local timezone)
+      return formatLocalDate(new Date())
     }
 
     if (selectedListId === 'upcoming') {
       // Set to 3 days from now (midpoint of 7-day range)
       const threeDaysFromNow = new Date()
       threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3)
-      return threeDaysFromNow.toISOString().split('T')[0]
+      return formatLocalDate(threeDaysFromNow)
     }
 
     return undefined
