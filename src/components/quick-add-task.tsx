@@ -219,19 +219,18 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleTitleKeyDown}
         placeholder={getPlaceholder()}
-        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                   placeholder-gray-400 dark:placeholder-gray-500"
+        className="w-full px-3 py-2 bg-background border border-border rounded-md
+                   focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                   placeholder:text-muted-foreground"
         aria-label="Quick add task"
       />
 
       {/* Expanded Form - Shown when user presses Cmd+Enter / Ctrl+Enter */}
       {expanded && (
-        <form onSubmit={handleExpandedSubmit} className="mt-3 space-y-3 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900">
+        <form onSubmit={handleExpandedSubmit} className="mt-3 space-y-3 p-4 border border-border rounded-md bg-muted/30">
           {/* Description Field */}
           <div>
-            <label htmlFor="task-description" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label htmlFor="task-description" className="block text-sm font-medium mb-1">
               Description (optional)
             </label>
             <textarea
@@ -241,16 +240,15 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
               onFocus={() => setShowCalendar(false)}
               placeholder="Add more details..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md
-                         bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-md
+                         focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                         placeholder:text-muted-foreground resize-none"
             />
           </div>
 
           {/* Tags Field */}
           <div>
-            <label htmlFor="task-tags" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label htmlFor="task-tags" className="block text-sm font-medium mb-1">
               Tags (optional, comma-separated)
             </label>
             <input
@@ -260,16 +258,15 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
               onChange={(e) => setTags(e.target.value)}
               onFocus={() => setShowCalendar(false)}
               placeholder="work, urgent, ideas"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md
-                         bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full px-3 py-2 bg-background border border-border rounded-md
+                         focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                         placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Priority Selector */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-2">
               Priority
             </label>
             <div className="flex gap-4">
@@ -282,7 +279,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
                   onClick={() => setShowCalendar(false)}
                   className="mr-2"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Low</span>
+                <span className="text-sm">Low</span>
               </label>
               <label className="flex items-center cursor-pointer">
                 <input
@@ -293,7 +290,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
                   onClick={() => setShowCalendar(false)}
                   className="mr-2"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Medium</span>
+                <span className="text-sm">Medium</span>
               </label>
               <label className="flex items-center cursor-pointer">
                 <input
@@ -304,14 +301,14 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
                   onClick={() => setShowCalendar(false)}
                   className="mr-2"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">High</span>
+                <span className="text-sm">High</span>
               </label>
             </div>
           </div>
 
           {/* Due Date Picker */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-2">
               Due Date (optional)
             </label>
             <div
@@ -320,12 +317,12 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
               tabIndex={0}
               role="button"
               aria-label="Select due date"
-              className="w-full flex items-center gap-2 p-3 border border-gray-300 dark:border-gray-600 rounded-md
-                         bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700
-                         transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full flex items-center gap-2 p-3 border border-border rounded-md
+                         bg-background hover:bg-accent/10
+                         transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
             >
-              <CalendarIcon className="size-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-sm flex-1 text-gray-900 dark:text-gray-100">
+              <CalendarIcon className="size-4 text-muted-foreground" />
+              <span className="text-sm flex-1">
                 {dueDate ? format(dueDate, 'PPP') : 'Pick a date'}
               </span>
               {dueDate && (
@@ -335,7 +332,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
                     e.stopPropagation()
                     setDueDate(undefined)
                   }}
-                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Clear
                 </button>
@@ -350,7 +347,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
                     setDueDate(date)
                     setShowCalendar(false)
                   }}
-                  className="rounded-md border border-gray-300 dark:border-gray-600"
+                  className="rounded-md border border-border"
                 />
               </div>
             )}
@@ -361,16 +358,16 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                         text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="px-4 py-2 text-sm border border-border rounded-md
+                         hover:bg-accent/10 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md
-                         hover:bg-blue-600 transition-colors disabled:opacity-50
+              className="px-4 py-2 text-sm bg-accent text-background rounded-md
+                         hover:bg-accent/90 transition-colors disabled:opacity-50
                          disabled:cursor-not-allowed"
             >
               Create
