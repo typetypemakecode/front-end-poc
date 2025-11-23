@@ -1,5 +1,5 @@
 import type { SidebarConfigData } from '../types/sidebar';
-import sidebarConfigData from './sidebarConfig.json';
+import sidebarConfigData from './initialSidebarConfig.json';
 
 /**
  * Legacy export for backward compatibility

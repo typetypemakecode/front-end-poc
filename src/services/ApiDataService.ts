@@ -1,7 +1,14 @@
 import type { IDataService } from './IDataService';
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
-import sidebarConfigData from '../data/sidebarConfig.json';
+import type { IconName } from '../utils/iconMapper';
+import sidebarConfigData from '../data/initialSidebarConfig.json';
+import {
+  SidebarConfigDataSchema,
+  SidebarItemDataSchema,
+  TaskDataSchema,
+  TaskCountsSchema,
+} from '../schemas';
 
 /**
  * API-based implementation of IDataService
@@ -27,7 +34,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const rawData = await response.json();
+      // Validate response against schema
+      const data = SidebarConfigDataSchema.parse(rawData);
       // Update cache
       this.cachedData = data;
       console.log('✅ Sidebar configuration loaded from API');
@@ -43,7 +52,7 @@ export class ApiDataService implements IDataService {
     return { ...this.cachedData };
   }
 
-  async addArea(title: string, iconName: string = 'Circle', priority: Priority = 'medium', description?: string): Promise<SidebarItemData> {
+  async addArea(title: string, iconName: IconName = 'Circle', priority: Priority = 'medium', description?: string): Promise<SidebarItemData> {
     const newArea: SidebarItemData = {
       key: this.generateKey(title),
       iconName,
@@ -67,7 +76,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const createdArea = await response.json();
+      const rawArea = await response.json();
+      // Validate response against schema
+      const createdArea = SidebarItemDataSchema.parse(rawArea);
       // Update cache
       this.cachedData.areas.push(createdArea);
       console.log('✅ Area created via API');
@@ -78,7 +89,7 @@ export class ApiDataService implements IDataService {
     }
   }
 
-  async addProject(title: string, iconName: string = 'Folder', priority: Priority = 'medium', description?: string, dueDate?: string): Promise<SidebarItemData> {
+  async addProject(title: string, iconName: IconName = 'Folder', priority: Priority = 'medium', description?: string, dueDate?: string): Promise<SidebarItemData> {
     const newProject: SidebarItemData = {
       key: this.generateKey(title),
       iconName,
@@ -103,7 +114,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const createdProject = await response.json();
+      const rawProject = await response.json();
+      // Validate response against schema
+      const createdProject = SidebarItemDataSchema.parse(rawProject);
       // Update cache
       this.cachedData.projects.push(createdProject);
       console.log('✅ Project created via API');
@@ -153,7 +166,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const tasks = await response.json();
+      const rawTasks = await response.json();
+      // Validate response against schema (array of tasks)
+      const tasks = rawTasks.map((task: unknown) => TaskDataSchema.parse(task));
       // Update cache
       this.cachedTasks = tasks;
       console.log('✅ Tasks loaded from API');
@@ -198,7 +213,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const counts = await response.json();
+      const rawCounts = await response.json();
+      // Validate response against schema
+      const counts = TaskCountsSchema.parse(rawCounts);
       console.log('✅ Task counts loaded from API');
       return counts;
     } catch (error) {
@@ -232,7 +249,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const task = await response.json();
+      const rawTask = await response.json();
+      // Validate response against schema
+      const task = TaskDataSchema.parse(rawTask);
       console.log('✅ Task loaded from API');
       return task;
     } catch (error) {
@@ -257,7 +276,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const createdTask = await response.json();
+      const rawTask = await response.json();
+      // Validate response against schema
+      const createdTask = TaskDataSchema.parse(rawTask);
       // Update cache
       this.cachedTasks.push(createdTask);
       console.log('✅ Task created via API');
@@ -282,7 +303,9 @@ export class ApiDataService implements IDataService {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      const updatedTask = await response.json();
+      const rawTask = await response.json();
+      // Validate response against schema
+      const updatedTask = TaskDataSchema.parse(rawTask);
       // Update cache
       const taskIndex = this.cachedTasks.findIndex(task => task.id === id);
       if (taskIndex !== -1) {
