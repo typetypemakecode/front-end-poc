@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-React + TypeScript + Vite application with a sidebar-based UI. Uses Tailwind CSS v4 for styling and Headless UI for accessible components.
+React + TypeScript + Vite task management application with a sidebar-based UI. Uses Tailwind CSS v4 for styling, Headless UI for accessible components, and @dnd-kit for drag-and-drop functionality.
 
 ## Development Commands
 
@@ -60,10 +60,12 @@ The singleton `dataService` is exported from `src/services/dataService.ts` and s
 
 **Mock Data:**
 - `src/data/sidebarConfig.json` - Initial sidebar data (smart lists, areas, projects)
-- `src/services/mockTaskData.ts` - 23 sample tasks distributed across all areas and projects
+- `src/services/mockTaskData.ts` - 26 sample tasks distributed across all areas and projects
   - Ensures every sidebar list has at least one task for testing
   - Includes tasks for inbox, today, upcoming, past_due, tags smart lists
   - Tasks use `listId` matching area/project keys: `work`, `home`, `health`, `ios_app`, `website`, `marketing`
+  - Task dates are relative to current date for realistic testing
+  - Includes tasks with all three statuses: active, completed, archived
 
 ### Component Structure
 
@@ -83,7 +85,8 @@ The singleton `dataService` is exported from `src/services/dataService.ts` and s
 - `task-list.tsx` - Loads tasks from dataService, handles task state and completion
   - Filters tasks based on selected smart list or area/project using `filterTasksByList` utility
   - Supports All/Active/Completed status filtering
-- `task.tsx` - Individual task display with completion toggle
+  - Implements drag-and-drop reordering using @dnd-kit/sortable
+- `task.tsx` - Individual task display with completion toggle and drag handle
 
 **Utilities:**
 - `utils/taskFilters.ts` - Shared filtering logic for smart lists
@@ -128,16 +131,20 @@ The application maintains separate **data types** (for API/storage) and **compon
 
 6. **Sidebar Structure**: Three main sections:
    - **Smart Lists** - Built-in lists with special counting logic:
-     - **Inbox**: Uncategorized tasks with NO `dueDate` AND NO `listId` (tasks in limbo)
-     - **Today**: Tasks due today (based on dueDate matching current date)
-     - **Upcoming**: Tasks due in the next 7 days (excluding today)
-     - **Past Due**: Overdue tasks (dueDate before today)
-     - **Tags**: Tasks that have at least one tag (non-empty `tags` array)
+     - **Inbox**: Uncategorized tasks with NO `dueDate` AND NO `listId`, excluding completed tasks (tasks in limbo)
+     - **Today**: Active tasks due today (based on dueDate matching current date, excludes completed)
+     - **Upcoming**: Active tasks due in the next 7 days (excluding today, excludes completed)
+     - **Past Due**: Active overdue tasks (dueDate before today, excludes completed)
+     - **Tags**: Tasks that have at least one tag (includes all statuses: active, completed, archived)
      - **Anytime, Someday, Logbook**: Not yet implemented (return 0)
    - **Areas** - User-created organizational areas (tasks assigned via `listId`)
    - **Projects** - User-created projects (tasks assigned via `listId`)
 
-   **Important**: Tasks should only use `listId` values that match actual areas/projects in the sidebar config. Smart lists like "inbox", "today", "upcoming", "tags" are virtual views based on task properties, not `listId` values.
+   **Important**:
+   - Tasks should only use `listId` values that match actual areas/projects in the sidebar config
+   - Smart lists like "inbox", "today", "upcoming", "tags" are virtual views based on task properties, not `listId` values
+   - Smart list counts in sidebar exclude completed tasks (except Tags which includes all statuses)
+   - The main content filter buttons (All/Active/Completed) work independently from sidebar counts
 
 7. **Data Persistence**:
    - `LocalDataService` uses two localStorage keys: `sidebarConfig` and `tasks`
@@ -153,9 +160,15 @@ The application maintains separate **data types** (for API/storage) and **compon
 
 9. **Smart List Filtering Logic**:
    - Smart lists are **virtual views** - they don't use `listId`, they filter based on task properties
-   - Date-based filtering uses local timezone (not UTC) via custom `parseDate()` helper
+   - Date-based filtering uses local timezone (not UTC) via custom `parseDate()` helper in both `LocalDataService.ts` and `taskFilters.ts`
    - Filtering happens client-side after fetching tasks from dataService
    - Count buttons (All/Active/Completed) show counts for the **currently selected list only**, not global counts
+
+10. **Drag-and-Drop Task Reordering**:
+   - Uses @dnd-kit library for accessible, touch-friendly drag-and-drop
+   - Task order persists via localStorage in `LocalDataService`
+   - Drag handle appears on hover for visual affordance
+   - Only works within the current filtered view (doesn't change task properties)
 
 ## API Endpoints (for ApiDataService)
 

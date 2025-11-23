@@ -1,11 +1,12 @@
 import { Plus } from 'lucide-react'
 import List from './sidebar-list'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { dataService } from '../services/dataService'
 import { getIcon } from '../utils/iconMapper'
 import type { SidebarItemData, SidebarConfigData } from '../types/sidebar'
 import Modal from './modal'
 import NewListForm from './new-list-form'
+import { showError, showSuccess } from '../lib/toastUtils'
 
 interface SidebarProps {
     refreshKey?: number;
@@ -17,6 +18,7 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [sidebarData, setSidebarData] = useState<SidebarConfigData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const newListButtonRef = useRef<HTMLButtonElement>(null);
 
     const handleItemClick = (key: string) => {
         // Toggle: if clicking same item, deselect
@@ -36,8 +38,10 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
         try {
             if (type === 'area') {
                 await dataService.addArea(title, undefined, undefined, description);
+                showSuccess(`Area "${title}" created successfully`);
             } else {
                 await dataService.addProject(title, undefined, undefined, description, dueDate);
+                showSuccess(`Project "${title}" created successfully`);
             }
 
             // Reload sidebar data to reflect the new item
@@ -46,14 +50,23 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
 
             // Close modal on success
             setIsNewListModalOpen(false);
+
+            // Return focus to "New List" button after modal closes
+            setTimeout(() => {
+                newListButtonRef.current?.focus();
+            }, 100);
         } catch (error) {
             console.error('Failed to add new list:', error);
-            alert('Failed to add new list. Please try again.');
+            showError(error, 'Failed to create list. Please try again.');
         }
     }
 
     const handleModalClose = () => {
         setIsNewListModalOpen(false);
+        // Return focus to "New List" button after modal closes
+        setTimeout(() => {
+            newListButtonRef.current?.focus();
+        }, 100);
     }
 
     // Load sidebar data on component mount and when refreshKey changes
@@ -64,6 +77,7 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
                 const data = await dataService.getSidebarConfig();
                 setSidebarData(data);
             } catch (error) {
+                showError(error, 'Failed to load sidebar data');
                 console.error('Failed to load sidebar data:', error);
                 // Fallback to local data on error
                 setSidebarData(dataService.getLocalSidebarConfig());
@@ -116,12 +130,14 @@ export default function Sidebar({ refreshKey, onListSelect }: SidebarProps) {
                 {/* Button container */}
                 <div className='bg-background/50 backdrop-blur-sm p-4 pointer-events-auto'>
                     <button
+                        ref={newListButtonRef}
                         onClick={handleNewListClick}
                         className='w-full flex items-center justify-center gap-2 px-4 py-2
                                    bg-accent text-background rounded-md hover:bg-accent/90
                                    transition-colors duration-200 font-medium'
+                        aria-label="Create new list"
                     >
-                        <Plus className='w-4 h-4' />
+                        <Plus className='w-4 h-4' aria-hidden="true" />
                         <span>New List</span>
                     </button>
                 </div>

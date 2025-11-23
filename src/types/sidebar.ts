@@ -1,11 +1,14 @@
 import type { LucideIcon } from "lucide-react";
+import type { IconName } from "../utils/iconMapper";
+import type { Priority } from '../schemas';
 
-export type Priority = 'low' | 'medium' | 'high';
+// Re-export shared Priority type from schemas
+export type { Priority };
 
 // API response types (icon as string name)
 export interface SidebarItemData {
     key: string;
-    iconName: string;
+    iconName: IconName;
     title: string;
     description?: string;
     count: number;

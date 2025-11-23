@@ -116,21 +116,16 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
     }
 
     return (
-        <div className="w-full relative">
+        <>
             {/* Sticky QuickAddTask at top */}
-            <div className="sticky top-0 z-10 pointer-events-none">
-                {/* Gradient fade below */}
-                <div className="h-8 bg-gradient-to-b from-background to-transparent"></div>
-                {/* QuickAddTask container with backdrop blur */}
-                <div className="bg-background/80 backdrop-blur-sm pb-2 pointer-events-auto">
-                    <QuickAddTask
-                        selectedListId={selectedListId}
-                        onTaskCreated={onCountsChange || (() => {})}
-                    />
-                </div>
+            <div className="sticky top-0 z-10 bg-gradient-to-b from-background via-background/95 to-background/80 backdrop-blur-sm pb-4">
+                <QuickAddTask
+                    selectedListId={selectedListId}
+                    onTaskCreated={onCountsChange || (() => {})}
+                />
             </div>
 
-            {/* Scrollable task list */}
+            {/* Task list */}
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
                 <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
                     <ul role="list" aria-label="Tasks" className="w-full">
@@ -152,6 +147,6 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
                     </ul>
                 </SortableContext>
             </DndContext>
-        </div>
+        </>
     )
 }

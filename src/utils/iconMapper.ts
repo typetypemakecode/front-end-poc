@@ -15,7 +15,25 @@ import {
   type LucideIcon
 } from 'lucide-react';
 
-export const iconMap: Record<string, LucideIcon> = {
+/**
+ * Valid icon names - union type for type safety
+ */
+export type IconName =
+  | 'Activity'
+  | 'Briefcase'
+  | 'Calendar'
+  | 'CalendarDays'
+  | 'Circle'
+  | 'Folder'
+  | 'Globe'
+  | 'House'
+  | 'Inbox'
+  | 'Megaphone'
+  | 'Smartphone'
+  | 'Tag'
+  | 'TriangleAlert';
+
+export const iconMap: Record<IconName, LucideIcon> = {
   Activity,
   Briefcase,
   Calendar,
@@ -32,5 +50,5 @@ export const iconMap: Record<string, LucideIcon> = {
 };
 
 export function getIcon(iconName: string): LucideIcon {
-  return iconMap[iconName] || Circle; // fallback to Circle if icon not found
+  return iconMap[iconName as IconName] || Circle; // fallback to Circle if icon not found
 }
