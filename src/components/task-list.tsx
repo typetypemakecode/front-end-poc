@@ -11,10 +11,11 @@ import { filterTasksByList } from '../utils/taskFilters'
 interface TaskListProps {
     filterKey: number;
     selectedListId: string | null;
+    refreshKey?: number;
     onCountsChange?: () => void | Promise<void>;
 }
 
-export default function TaskList({ filterKey, selectedListId, onCountsChange }: TaskListProps) {
+export default function TaskList({ filterKey, selectedListId, refreshKey, onCountsChange }: TaskListProps) {
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const [tasks, setTasks] = useState<TaskData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
         useSensor(KeyboardSensor)
     );
 
-    // Load tasks from service when filterKey or selectedListId changes
+    // Load tasks from service when filterKey, selectedListId, or refreshKey changes
     useEffect(() => {
         const loadTasks = async () => {
             try {
@@ -51,7 +52,7 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
         };
 
         loadTasks();
-    }, [filterKey, selectedListId]);
+    }, [filterKey, selectedListId, refreshKey]);
 
     const handleTaskClick = (id: string) => {
         setSelectedTaskId(id);

@@ -111,7 +111,7 @@ export default function MainContent({ refreshKey, selectedListId = null, onDataC
             </div>
         </div>
         <div className='flex-1 overflow-y-auto px-4 space-y-2 min-h-0' role="region" aria-label="Task list">
-            <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} onCountsChange={handleCountsChange} />
+            <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} refreshKey={refreshKey} onCountsChange={handleCountsChange} />
         </div>
     </div>
   )
