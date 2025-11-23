@@ -120,14 +120,14 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
             {/* Sticky QuickAddTask at top */}
             <div className="sticky top-0 z-10 pointer-events-none">
                 {/* QuickAddTask container */}
-                <div className='bg-background/50 backdrop-blur-sm px-4 pt-4 pb-1 pointer-events-auto'>
+                <div className='bg-background/50 backdrop-blur-sm px-4 pt-4 pb-0 pointer-events-auto'>
                     <QuickAddTask
                         selectedListId={selectedListId}
                         onTaskCreated={onCountsChange || (() => {})}
                     />
                 </div>
                 {/* Gradient fade to soften the edge */}
-                <div className='h-12 bg-gradient-to-b from-background/50 to-transparent'></div>
+                <div className='h-4 bg-gradient-to-b from-background/50 to-transparent'></div>
             </div>
 
             {/* Task list */}
