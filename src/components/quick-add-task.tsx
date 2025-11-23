@@ -4,6 +4,7 @@ import { Calendar as CalendarIcon } from 'lucide-react'
 import { dataService } from '../services/dataService'
 import { showError } from '../lib/toastUtils'
 import { Calendar } from '@/components/ui/calendar'
+import Modal from './modal'
 import type { CreateTaskInput, TaskPriority } from '../types/task'
 
 interface QuickAddTaskProps {
@@ -15,7 +16,7 @@ const SMART_LISTS = ['inbox', 'today', 'upcoming', 'past_due', 'tags', 'anytime'
 
 export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProps) {
   const [title, setTitle] = useState('')
-  const [expanded, setExpanded] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState('')
   const [priority, setPriority] = useState<TaskPriority>('low')
@@ -86,7 +87,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   }
 
   /**
-   * Create task with context-aware defaults or expanded form values
+   * Create task with context-aware defaults or modal form values
    */
   const createTask = async () => {
     const trimmedTitle = title.trim()
@@ -97,28 +98,28 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
     }
 
     try {
-      // Build task input with context-aware defaults or expanded form values
+      // Build task input with context-aware defaults or modal form values
       const taskInput: CreateTaskInput = {
         title: trimmedTitle,
-        priority: expanded ? priority : 'low',
+        priority: isModalOpen ? priority : 'low',
         status: 'active'
       }
 
-      // Add description if in expanded mode
-      if (expanded && description.trim()) {
+      // Add description if in modal mode
+      if (isModalOpen && description.trim()) {
         taskInput.description = description.trim()
       }
 
-      // Add tags if in expanded mode
-      if (expanded && tags.trim()) {
+      // Add tags if in modal mode
+      if (isModalOpen && tags.trim()) {
         // Split by commas and trim each tag
         taskInput.tags = tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
       }
 
-      // Add dueDate - use expanded form value if set, otherwise use contextual
-      if (expanded && dueDate) {
+      // Add dueDate - use modal form value if set, otherwise use contextual
+      if (isModalOpen && dueDate) {
         taskInput.dueDate = format(dueDate, 'yyyy-MM-dd')
-      } else if (!expanded) {
+      } else if (!isModalOpen) {
         const contextualDueDate = getContextualDueDate()
         if (contextualDueDate) {
           taskInput.dueDate = contextualDueDate
@@ -146,11 +147,11 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   }
 
   /**
-   * Reset all form fields and collapse
+   * Reset all form fields and close modal
    */
   const resetForm = () => {
     setTitle('')
-    setExpanded(false)
+    setIsModalOpen(false)
     setDescription('')
     setTags('')
     setPriority('low')
@@ -161,40 +162,36 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   /**
    * Handle keyboard events for title input
    * Enter: Quick creation
-   * Cmd+Enter / Ctrl+Enter: Expand form
-   * Escape: Collapse or clear
+   * Cmd+Enter / Ctrl+Enter: Open modal
+   * Escape: Clear input
    */
   const handleTitleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
-    // Cmd+Enter (Mac) or Ctrl+Enter (Windows) - Expand form
+    // Cmd+Enter (Mac) or Ctrl+Enter (Windows) - Open modal
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
-      setExpanded(true)
+      setIsModalOpen(true)
       return
     }
 
-    // Enter - Quick creation (only if not expanded)
-    if (e.key === 'Enter' && !e.shiftKey && !e.metaKey && !e.ctrlKey && !expanded) {
+    // Enter - Quick creation
+    if (e.key === 'Enter' && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
       e.preventDefault()
       await createTask()
       return
     }
 
-    // Escape - Collapse if expanded, clear if not
+    // Escape - Clear input
     if (e.key === 'Escape') {
       e.preventDefault()
-      if (expanded) {
-        setExpanded(false)
-      } else {
-        setTitle('')
-      }
+      setTitle('')
     }
   }
 
   /**
-   * Handle cancel button click in expanded form
+   * Handle modal close
    */
-  const handleCancel = () => {
-    setExpanded(false)
+  const handleModalClose = () => {
+    setIsModalOpen(false)
     setDescription('')
     setTags('')
     setPriority('low')
@@ -203,15 +200,15 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   }
 
   /**
-   * Handle form submission in expanded mode
+   * Handle form submission in modal
    */
-  const handleExpandedSubmit = async (e: React.FormEvent) => {
+  const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await createTask()
   }
 
   return (
-    <div>
+    <>
       {/* Title Input - Always Visible */}
       <input
         type="text"
@@ -225,9 +222,31 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
         aria-label="Quick add task"
       />
 
-      {/* Expanded Form - Shown when user presses Cmd+Enter / Ctrl+Enter */}
-      {expanded && (
-        <form onSubmit={handleExpandedSubmit} className="mt-3 space-y-3 p-4 border border-border rounded-md bg-muted/30">
+      {/* Modal for detailed task creation */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        title="Create Task"
+      >
+        <form onSubmit={handleModalSubmit} className="space-y-3">
+          {/* Title Field */}
+          <div>
+            <label htmlFor="task-title" className="block text-sm font-medium mb-1">
+              Title
+            </label>
+            <input
+              id="task-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={getPlaceholder()}
+              className="w-full px-3 py-2 bg-background border border-border rounded-md
+                         focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                         placeholder:text-muted-foreground"
+              autoFocus
+            />
+          </div>
+
           {/* Description Field */}
           <div>
             <label htmlFor="task-description" className="block text-sm font-medium mb-1">
@@ -357,7 +376,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
           <div className="flex gap-2 justify-end pt-2">
             <button
               type="button"
-              onClick={handleCancel}
+              onClick={handleModalClose}
               className="px-4 py-2 text-sm border border-border rounded-md
                          hover:bg-accent/10 transition-colors"
             >
@@ -374,7 +393,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
             </button>
           </div>
         </form>
-      )}
-    </div>
+      </Modal>
+    </>
   )
 }
