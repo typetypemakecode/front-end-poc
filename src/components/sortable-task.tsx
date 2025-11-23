@@ -4,7 +4,7 @@ import { GripVertical } from 'lucide-react';
 import Task from './task';
 import type { TaskProps } from './task';
 
-export default function SortableTask({id, title, description, dueDate, assignee, tags, completed, selected, onclick, onToggleComplete}: TaskProps) {
+export default function SortableTask({id, title, description, dueDate, assignee, tags, completed, selected, onclick, onToggleComplete, onEdit}: TaskProps) {
     const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id});
 
     const style = {
@@ -38,6 +38,7 @@ export default function SortableTask({id, title, description, dueDate, assignee,
                 selected={selected}
                 onclick={onclick}
                 onToggleComplete={onToggleComplete}
+                onEdit={onEdit}
                 dragHandle={dragHandleButton}
             />
         </div>
