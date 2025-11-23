@@ -117,22 +117,23 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
     return (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-                <div>
+                <ul role="list" aria-label="Tasks" className="w-full">
                     {tasks.map(task => (
-                        <SortableTask
-                            key={task.id}
-                            id={task.id}
-                            title={task.title}
-                            description={task.description}
-                            dueDate={task.dueDate}
-                            tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
-                            completed={task.status === 'completed'}
-                            selected={selectedTaskId === task.id}
-                            onclick={handleTaskClick}
-                            onToggleComplete={handleToggleComplete}
-                        />
+                        <li key={task.id} className="w-full">
+                            <SortableTask
+                                id={task.id}
+                                title={task.title}
+                                description={task.description}
+                                dueDate={task.dueDate}
+                                tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
+                                completed={task.status === 'completed'}
+                                selected={selectedTaskId === task.id}
+                                onclick={handleTaskClick}
+                                onToggleComplete={handleToggleComplete}
+                            />
+                        </li>
                     ))}
-                </div>
+                </ul>
             </SortableContext>
         </DndContext>
     )

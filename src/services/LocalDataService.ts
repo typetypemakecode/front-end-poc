@@ -1,8 +1,9 @@
 import type { IDataService } from './IDataService';
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
-import sidebarConfigData from '../data/sidebarConfig.json';
-import { mockTasks } from './mockTaskData';
+import type { IconName } from '../utils/iconMapper';
+import sidebarConfigData from '../data/initialSidebarConfig.json';
+import initialTasks from '../data/initialTasks.json';
 
 /**
  * Local implementation of IDataService
@@ -18,7 +19,7 @@ export class LocalDataService implements IDataService {
   constructor() {
     // Load initial data from JSON or localStorage
     this.localData = this.loadFromLocalStorage() || ({ ...sidebarConfigData } as SidebarConfigData);
-    this.tasks = this.loadTasksFromLocalStorage() || [...mockTasks];
+    this.tasks = this.loadTasksFromLocalStorage() || (initialTasks as TaskData[]);
   }
 
   async getSidebarConfig(): Promise<SidebarConfigData> {
@@ -98,9 +99,9 @@ export class LocalDataService implements IDataService {
         }
 
         case 'tags': {
-          // Tasks that have at least one tag
+          // Tasks that have at least one tag (includes all statuses: active, completed, archived)
           const taggedTasks = this.tasks.filter(task => {
-            const hasTags = task.tags && task.tags.length > 0 && task.status !== 'completed';
+            const hasTags = task.tags && task.tags.length > 0;
             if (hasTags) {
               console.log(`[TAGS] ${task.title} - tags: ${task.tags?.join(', ')}`);
             }
@@ -141,7 +142,7 @@ export class LocalDataService implements IDataService {
     return { ...this.localData };
   }
 
-  async addArea(title: string, iconName: string = 'Circle', priority: Priority = 'medium', description?: string): Promise<SidebarItemData> {
+  async addArea(title: string, iconName: IconName = 'Circle', priority: Priority = 'medium', description?: string): Promise<SidebarItemData> {
     const newArea: SidebarItemData = {
       key: this.generateKey(title),
       iconName,
@@ -158,7 +159,7 @@ export class LocalDataService implements IDataService {
     return newArea;
   }
 
-  async addProject(title: string, iconName: string = 'Folder', priority: Priority = 'medium', description?: string, dueDate?: string): Promise<SidebarItemData> {
+  async addProject(title: string, iconName: IconName = 'Folder', priority: Priority = 'medium', description?: string, dueDate?: string): Promise<SidebarItemData> {
     const newProject: SidebarItemData = {
       key: this.generateKey(title),
       iconName,

@@ -2,6 +2,8 @@ import './App.css'
 import Header from './components/header'
 import Sidebar from './components/sidebar'
 import MainContent from './components/main-content'
+import { ErrorBoundary, FeatureErrorBoundary } from './components/error-boundary'
+import { ToastProvider } from './lib/toast'
 import { useState } from 'react'
 
 function App() {
@@ -19,15 +21,22 @@ function App() {
   };
 
   return (
-    <>
-    <div className='flex flex-col bg-background text-foreground h-screen'>
-      <Header />
-      <div className='flex flex-1 overflow-hidden'>
-        <Sidebar refreshKey={refreshKey} onListSelect={handleListSelect} />
-        <MainContent refreshKey={refreshKey} selectedListId={selectedListId} onDataChange={handleDataChange} />
+    <ErrorBoundary>
+      <div className='flex flex-col bg-background text-foreground h-screen'>
+        <Header />
+        <div className='flex flex-1 overflow-hidden'>
+          <FeatureErrorBoundary featureName="sidebar">
+            <Sidebar refreshKey={refreshKey} onListSelect={handleListSelect} />
+          </FeatureErrorBoundary>
+          <FeatureErrorBoundary featureName="main content">
+            <main role="main" aria-label="Task content" className="flex-1 overflow-hidden">
+              <MainContent refreshKey={refreshKey} selectedListId={selectedListId} onDataChange={handleDataChange} />
+            </main>
+          </FeatureErrorBoundary>
+        </div>
       </div>
-    </div>
-    </>
+      <ToastProvider />
+    </ErrorBoundary>
   )
 }
 
