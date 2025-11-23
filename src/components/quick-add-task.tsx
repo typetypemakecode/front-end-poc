@@ -1,5 +1,5 @@
-import { useState, KeyboardEvent } from 'react'
-import dataService from '../services/dataService'
+import { useState, type KeyboardEvent } from 'react'
+import { dataService } from '../services/dataService'
 import { showError } from '../lib/toastUtils'
 import type { CreateTaskInput } from '../types/task'
 

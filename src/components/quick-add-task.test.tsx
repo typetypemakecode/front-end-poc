@@ -7,7 +7,7 @@ import * as toastUtils from '../lib/toastUtils'
 
 // Mock the data service
 vi.mock('../services/dataService', () => ({
-  default: {
+  dataService: {
     createTask: vi.fn()
   }
 }))
@@ -75,7 +75,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -84,7 +84,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'New task',
           priority: 'low',
           status: 'active'
@@ -102,7 +102,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -125,7 +125,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -145,7 +145,7 @@ describe('QuickAddTask', () => {
       await user.click(input)
       await user.keyboard('{Enter}')
 
-      expect(dataServiceModule.default.createTask).not.toHaveBeenCalled()
+      expect(dataServiceModule.dataService.createTask).not.toHaveBeenCalled()
       expect(mockOnTaskCreated).not.toHaveBeenCalled()
     })
 
@@ -159,7 +159,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -168,7 +168,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Trimmed task',
           priority: 'low',
           status: 'active'
@@ -189,7 +189,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId="work" onTaskCreated={mockOnTaskCreated} />)
 
@@ -198,7 +198,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Work task',
           priority: 'low',
           status: 'active',
@@ -217,7 +217,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId="today" onTaskCreated={mockOnTaskCreated} />)
 
@@ -228,7 +228,7 @@ describe('QuickAddTask', () => {
       const today = new Date().toISOString().split('T')[0]
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Today task',
           priority: 'low',
           status: 'active',
@@ -247,7 +247,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId="upcoming" onTaskCreated={mockOnTaskCreated} />)
 
@@ -260,7 +260,7 @@ describe('QuickAddTask', () => {
       const expectedDate = threeDaysFromNow.toISOString().split('T')[0]
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Upcoming task',
           priority: 'low',
           status: 'active',
@@ -279,7 +279,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId="inbox" onTaskCreated={mockOnTaskCreated} />)
 
@@ -288,7 +288,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Inbox task',
           priority: 'low',
           status: 'active'
@@ -306,7 +306,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -315,7 +315,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        expect(dataServiceModule.default.createTask).toHaveBeenCalledWith({
+        expect(dataServiceModule.dataService.createTask).toHaveBeenCalledWith({
           title: 'Unassigned task',
           priority: 'low',
           status: 'active'
@@ -327,7 +327,7 @@ describe('QuickAddTask', () => {
   describe('Error Handling', () => {
     it('should show error toast on creation failure', async () => {
       const error = new Error('Network error')
-      vi.mocked(dataServiceModule.default.createTask).mockRejectedValue(error)
+      vi.mocked(dataServiceModule.dataService.createTask).mockRejectedValue(error)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -342,7 +342,7 @@ describe('QuickAddTask', () => {
 
     it('should preserve user input on error', async () => {
       const error = new Error('Network error')
-      vi.mocked(dataServiceModule.default.createTask).mockRejectedValue(error)
+      vi.mocked(dataServiceModule.dataService.createTask).mockRejectedValue(error)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -360,7 +360,7 @@ describe('QuickAddTask', () => {
 
     it('should not call onTaskCreated on error', async () => {
       const error = new Error('Network error')
-      vi.mocked(dataServiceModule.default.createTask).mockRejectedValue(error)
+      vi.mocked(dataServiceModule.dataService.createTask).mockRejectedValue(error)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -387,7 +387,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -396,7 +396,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        const call = vi.mocked(dataServiceModule.default.createTask).mock.calls[0][0]
+        const call = vi.mocked(dataServiceModule.dataService.createTask).mock.calls[0][0]
         expect(call.priority).toBe('low')
       })
     })
@@ -411,7 +411,7 @@ describe('QuickAddTask', () => {
         updatedAt: new Date().toISOString()
       }
 
-      vi.mocked(dataServiceModule.default.createTask).mockResolvedValue(mockTask)
+      vi.mocked(dataServiceModule.dataService.createTask).mockResolvedValue(mockTask)
 
       render(<QuickAddTask selectedListId={null} onTaskCreated={mockOnTaskCreated} />)
 
@@ -420,7 +420,7 @@ describe('QuickAddTask', () => {
       await user.keyboard('{Enter}')
 
       await waitFor(() => {
-        const call = vi.mocked(dataServiceModule.default.createTask).mock.calls[0][0]
+        const call = vi.mocked(dataServiceModule.dataService.createTask).mock.calls[0][0]
         expect(call.status).toBe('active')
       })
     })
