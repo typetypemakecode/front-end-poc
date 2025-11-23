@@ -3,6 +3,7 @@ import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import SortableTask from './sortable-task'
+import { QuickAddTask } from './quick-add-task'
 import { dataService } from '../services/dataService'
 import type { TaskData } from '../types/task'
 import { filterTasksByList } from '../utils/taskFilters'
@@ -115,26 +116,32 @@ export default function TaskList({ filterKey, selectedListId, onCountsChange }: 
     }
 
     return (
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-                <ul role="list" aria-label="Tasks" className="w-full">
-                    {tasks.map(task => (
-                        <li key={task.id} className="w-full">
-                            <SortableTask
-                                id={task.id}
-                                title={task.title}
-                                description={task.description}
-                                dueDate={task.dueDate}
-                                tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
-                                completed={task.status === 'completed'}
-                                selected={selectedTaskId === task.id}
-                                onclick={handleTaskClick}
-                                onToggleComplete={handleToggleComplete}
-                            />
-                        </li>
-                    ))}
-                </ul>
-            </SortableContext>
-        </DndContext>
+        <div className="w-full">
+            <QuickAddTask
+                selectedListId={selectedListId}
+                onTaskCreated={onCountsChange || (() => {})}
+            />
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+                    <ul role="list" aria-label="Tasks" className="w-full">
+                        {tasks.map(task => (
+                            <li key={task.id} className="w-full">
+                                <SortableTask
+                                    id={task.id}
+                                    title={task.title}
+                                    description={task.description}
+                                    dueDate={task.dueDate}
+                                    tags={task.tags?.map(tag => ({ label: tag, theme: 'emerald' as const }))}
+                                    completed={task.status === 'completed'}
+                                    selected={selectedTaskId === task.id}
+                                    onclick={handleTaskClick}
+                                    onToggleComplete={handleToggleComplete}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </SortableContext>
+            </DndContext>
+        </div>
     )
 }
