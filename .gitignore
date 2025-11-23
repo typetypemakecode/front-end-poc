@@ -55,3 +55,6 @@ Thumbs.db
 tmp
 temp
 *.tmp
+
+# Git worktrees
+.worktrees/
