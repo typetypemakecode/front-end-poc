@@ -1,9 +1,7 @@
-// @ts-nocheck - Suppressing unused variable errors during initial component setup
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { dataService } from '../services/dataService'
-import { showError, toast } from '../lib/toastUtils'
+import { showError, showSuccess } from '../lib/toastUtils'
 import { Calendar } from '@/components/ui/calendar'
 import Modal from './modal'
 import type { TaskData, UpdateTaskInput, TaskPriority, TaskStatus } from '../types/task'
@@ -111,7 +109,7 @@ export function EditTaskModal({
       // Only call onSave if there are changes
       if (Object.keys(updates).length > 0) {
         await onSave(updates)
-        toast({ title: 'Task updated successfully' })
+        showSuccess('Task updated successfully')
       }
 
       onClose()
@@ -129,7 +127,7 @@ export function EditTaskModal({
 
     try {
       await onArchive(task.id)
-      toast({ title: 'Task archived' })
+      showSuccess('Task archived')
       onClose()
     } catch (error) {
       showError(error)
