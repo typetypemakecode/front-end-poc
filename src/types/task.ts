@@ -1,7 +1,8 @@
 // Task data types - used for API/storage layer
 
-export type TaskPriority = 'low' | 'medium' | 'high';
-export type TaskStatus = 'active' | 'completed' | 'archived';
+// Re-export types from schemas for consistency
+import type { Priority as TaskPriority, TaskStatus } from '../schemas';
+export type { Priority as TaskPriority, TaskStatus } from '../schemas';
 
 export interface TaskData {
   id: string;

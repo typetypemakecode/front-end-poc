@@ -59,20 +59,59 @@ export default function MainContent({ refreshKey, selectedListId = null, onDataC
     };
 
   return (
-    <div className='flex-1 px-4 my-4 flex flex-col'>
-        <div className="flex flex-row text-muted-foreground text-xl">
-            <div className="flex items-center gap-3">
-                <button key={1} className={`px-3 py-1 text-sm ${selectedFilterKey === 1 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`} onClick={() => handleFilterChange(1)}>All ({counts.all})</button>
-                <button key={2} className={`px-3 py-1 text-sm ${selectedFilterKey === 2 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`} onClick={() => handleFilterChange(2)}>Active ({counts.active})</button>
-                <button key={3} className={`px-3 py-1 text-sm ${selectedFilterKey === 3 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`} onClick={() => handleFilterChange(3)}>Completed ({counts.completed})</button>
+    <div className='h-full px-4 py-4 flex flex-col overflow-hidden'>
+        <div className="flex flex-row text-muted-foreground text-xl" role="toolbar" aria-label="Task filters and actions">
+            <div className="flex items-center gap-3" role="group" aria-label="Status filters">
+                <button
+                    key={1}
+                    type="button"
+                    className={`px-3 py-1 text-sm ${selectedFilterKey === 1 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                    onClick={() => handleFilterChange(1)}
+                    aria-pressed={selectedFilterKey === 1}
+                    aria-label={`Show all tasks (${counts.all})`}
+                >
+                    All ({counts.all})
+                </button>
+                <button
+                    key={2}
+                    type="button"
+                    className={`px-3 py-1 text-sm ${selectedFilterKey === 2 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                    onClick={() => handleFilterChange(2)}
+                    aria-pressed={selectedFilterKey === 2}
+                    aria-label={`Show active tasks (${counts.active})`}
+                >
+                    Active ({counts.active})
+                </button>
+                <button
+                    key={3}
+                    type="button"
+                    className={`px-3 py-1 text-sm ${selectedFilterKey === 3 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                    onClick={() => handleFilterChange(3)}
+                    aria-pressed={selectedFilterKey === 3}
+                    aria-label={`Show completed tasks (${counts.completed})`}
+                >
+                    Completed ({counts.completed})
+                </button>
             </div>
-            <div className="justify-end flex flex-1 gap-4">
-                <button className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'> <Funnel className="w-6 h-6" /></button>
-                <button className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'> <ArrowUpNarrowWide className="w-6 h-6" /></button>
+            <div className="justify-end flex flex-1 gap-4" role="group" aria-label="Task actions">
+                <button
+                    type="button"
+                    className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
+                    aria-label="Filter tasks"
+                >
+                    <Funnel className="w-6 h-6" aria-hidden="true" />
+                </button>
+                <button
+                    type="button"
+                    className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
+                    aria-label="Sort tasks"
+                >
+                    <ArrowUpNarrowWide className="w-6 h-6" aria-hidden="true" />
+                </button>
             </div>
         </div>
-        <div className='flex-1 overflow-y-auto px-4 space-y-2 min-h-0'>
-            <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} onCountsChange={handleCountsChange} />
+        <div className='flex-1 overflow-y-auto px-4 space-y-2 min-h-0' role="region" aria-label="Task list">
+            <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} refreshKey={refreshKey} onCountsChange={handleCountsChange} />
         </div>
     </div>
   )

@@ -18,8 +18,10 @@ export default function SortableTask({id, title, description, dueDate, assignee,
             {...listeners}
             className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
             onClick={(e) => e.stopPropagation()}
+            aria-label={`Drag to reorder task: ${title}`}
+            type="button"
         >
-            <GripVertical className="w-5 h-5" />
+            <GripVertical className="w-5 h-5" aria-hidden="true" />
         </button>
     );
 

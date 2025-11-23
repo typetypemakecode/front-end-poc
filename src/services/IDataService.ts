@@ -1,5 +1,6 @@
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
+import type { IconName } from '../utils/iconMapper';
 
 /**
  * Interface for data service implementations
@@ -26,7 +27,7 @@ export interface IDataService {
    * @param description - Optional description for the area
    * @returns Promise<SidebarItemData> - The newly created area
    */
-  addArea(title: string, iconName?: string, priority?: Priority, description?: string): Promise<SidebarItemData>;
+  addArea(title: string, iconName?: IconName, priority?: Priority, description?: string): Promise<SidebarItemData>;
 
   /**
    * Adds a new project to the sidebar configuration
@@ -37,7 +38,7 @@ export interface IDataService {
    * @param dueDate - Optional due date for the project (ISO format: YYYY-MM-DD)
    * @returns Promise<SidebarItemData> - The newly created project
    */
-  addProject(title: string, iconName?: string, priority?: Priority, description?: string, dueDate?: string): Promise<SidebarItemData>;
+  addProject(title: string, iconName?: IconName, priority?: Priority, description?: string, dueDate?: string): Promise<SidebarItemData>;
 
   /**
    * Gets the current data source mode

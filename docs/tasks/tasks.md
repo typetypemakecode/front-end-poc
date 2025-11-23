@@ -24,38 +24,42 @@
 ### HIGH PRIORITY
 
 #### Error Handling
-- [ ] Replace `alert()` with toast notification system (react-hot-toast or sonner)
-- [ ] Add error boundaries to catch React errors
-- [ ] Add retry logic for failed API requests
-- [ ] Create proper error types and display meaningful messages
-- [ ] Distinguish between network errors vs validation errors
+- [x] Replace `alert()` with toast notification system (react-hot-toast or sonner) ✅ COMPLETED: Implemented with Sonner library (src/lib/toast.tsx, src/lib/toastUtils.ts)
+- [x] Add error boundaries to catch React errors ✅ COMPLETED: Created ErrorBoundary and FeatureErrorBoundary components (src/components/error-boundary.tsx)
+- [x] Add retry logic for failed API requests ✅ COMPLETED: Implemented exponential backoff with jitter in ApiDataService (src/utils/retryWithBackoff.ts)
+- [x] Create proper error types and display meaningful messages ✅ COMPLETED: Created custom error types (src/types/errors.ts): NetworkError, ApiError, ValidationError, StorageError, DataError, NotFoundError
+- [x] Distinguish between network errors vs validation errors ✅ COMPLETED: Custom error types with user-friendly messages and proper HTTP status codes
 
 #### Custom Hooks & State Management
-- [ ] Extract `useSidebarData` hook for data fetching
-- [ ] Extract `useCreateList` hook for create operations
-- [ ] Remove tight coupling of state to Sidebar component
-- [ ] Fix `sidebarData` nullable state handling (src/components/sidebar.tsx:13)
+- [x] Extract `useSidebarData` hook for data fetching ✅ DONE: Created src/hooks/useSidebarData.ts
+- [x] Extract `useCreateList` hook for create operations ✅ DONE: Created src/hooks/useCreateList.ts
+- [x] Remove tight coupling of state to Sidebar component ✅ DONE: State management now in custom hooks
+- [x] Fix `sidebarData` nullable state handling ✅ DONE: useSidebarData initializes with local data, no longer nullable
 
 #### Type Safety
-- [ ] Add runtime schema validation with Zod or Yup for API responses
-- [ ] Create type-safe environment variable handling in `src/env.ts`
-- [ ] Validate required env vars exist at startup
-- [ ] Create icon name union type instead of string (prevents invalid icon names)
-- [ ] Remove duplicate type definitions
+- [x] Add runtime schema validation with Zod or Yup for API responses ✅ DONE: Zod schemas in src/schemas/index.ts, validation in ApiDataService
+- [x] Create type-safe environment variable handling in `src/env.ts` ✅ DONE: Created src/env.ts with Zod validation
+- [x] Validate required env vars exist at startup ✅ DONE: Validation happens at module load in src/env.ts
+- [x] Create icon name union type instead of string ✅ DONE: IconName type in src/utils/iconMapper.ts
+- [x] Remove duplicate type definitions ✅ DONE: Priority type now exported from src/schemas/index.ts
 
 #### Accessibility Fixes
-- [ ] Convert clickable divs to buttons in sidebar-item.tsx:16-18
-- [ ] Add proper ARIA labels for list sections
-- [ ] Add keyboard navigation (arrow keys) for sidebar items
-- [ ] Improve focus management after modal actions
-- [ ] Add proper semantic HTML and roles
+- [x] Convert clickable divs to buttons ✅ COMPLETED: Converted all clickable divs to proper button elements with ARIA labels
+- [x] Add proper ARIA labels for list sections ✅ COMPLETED: Added aria-label to all navigation sections and interactive elements
+- [x] Add keyboard navigation (arrow keys) for sidebar items ✅ COMPLETED: Implemented ArrowUp/ArrowDown/Home/End keyboard navigation with focus management
+- [x] Improve focus management after modal actions ✅ COMPLETED: Focus returns to "New List" button after modal closes
+- [x] Add proper semantic HTML and roles ✅ COMPLETED: Added semantic elements (nav, main, article) and ARIA roles throughout app
 
 #### Basic Testing
-- [ ] Set up Vitest
-- [ ] Add React Testing Library
-- [ ] Write unit tests for LocalDataService
-- [ ] Write unit tests for ApiDataService
-- [ ] Write tests for utility functions
+- [x] Set up Vitest ✅ COMPLETED: Configured with vitest.config.ts, test setup, and npm scripts
+- [x] Add React Testing Library ✅ COMPLETED: Installed @testing-library/react, @testing-library/jest-dom, @testing-library/user-event
+- [x] Write unit tests for LocalDataService ✅ COMPLETED: 37 comprehensive tests covering all methods, smart lists, localStorage persistence, task operations, and edge cases
+- [x] Write unit tests for ApiDataService ✅ COMPLETED: 30 comprehensive tests covering API calls, Zod validation, retry logic, error handling, and cache fallbacks
+- [x] Write tests for utility functions ✅ COMPLETED:
+  - iconMapper.ts: 25 tests for icon mapping and fallback behavior
+  - taskFilters.ts: 26 tests for smart list filtering, date parsing, and edge cases
+  - retryWithBackoff.ts: 28 tests for exponential backoff, retry logic, online detection, and error handling
+  - All 146 tests passing with comprehensive coverage of critical paths
 
 ### MEDIUM PRIORITY
 
@@ -90,8 +94,8 @@
 - [ ] Add request deduplication
 
 #### Styling & Design System
-- [ ] Fix typo: `backdrop:blur-sm` → `backdrop-blur-sm` (sidebar.tsx:104)
-- [ ] Create `cn()` utility function for className composition (clsx/tailwind-merge)
+- [ ] Fix typo: `backdrop:blur-sm` → `backdrop-blur-sm` ⚠️ CONFIRMED: Still exists at sidebar.tsx:115
+- [x] Create `cn()` utility function for className composition ✅ DONE: Exists in src/lib/utils.ts
 - [ ] Extract repeated Tailwind patterns to reusable components
 - [ ] Document color/spacing tokens in CLAUDE.md or separate docs
 - [ ] Create consistent component API patterns
@@ -182,8 +186,8 @@ src/
 - [x] Update `ApiDataService` to send description and due date to backend
 
 ### Phase 2: Basic Display (Quick wins)
-- [ ] Show description as tooltip on sidebar item hover (sidebar-item.tsx)
-- [ ] Add small due date badge next to count for projects with due dates
+- [x] Show description as tooltip on sidebar item hover (sidebar-item.tsx)
+- [x] Add small due date badge next to count for projects with due dates
 - [ ] Implement color-coded due date indicators (green: 7+ days, yellow: 2-7 days, orange: tomorrow, red: overdue)
 - [ ] Add subtle 🗒️ indicator icon for items that have descriptions
 - [ ] Style overdue projects with red icon tint or warning indicator

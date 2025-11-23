@@ -1,14 +1,14 @@
 import type { IDataService } from './IDataService';
 import { LocalDataService } from './LocalDataService';
 import { ApiDataService } from './ApiDataService';
+import { ENV } from '../env';
 
 /**
  * Configuration for the data service
- * Set USE_API to true to fetch from API endpoints
- * Set USE_API to false to use local storage
+ * Uses validated environment variables from src/env.ts
  */
-const USE_API = import.meta.env.VITE_USE_API === 'true';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const USE_API = ENV.USE_API;
+const API_BASE_URL = ENV.API_BASE_URL;
 
 /**
  * Factory function to create the appropriate data service implementation
