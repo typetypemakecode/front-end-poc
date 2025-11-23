@@ -211,7 +211,7 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 pt-2">
       {/* Title Input - Always Visible */}
       <input
         type="text"
