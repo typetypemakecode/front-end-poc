@@ -5,8 +5,10 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import SortableTask from './sortable-task'
 import { QuickAddTask } from './quick-add-task'
 import { dataService } from '../services/dataService'
-import type { TaskData } from '../types/task'
+import type { TaskData, UpdateTaskInput } from '../types/task'
+import type { SidebarItemData } from '../types/sidebar'
 import { filterTasksByList } from '../utils/taskFilters'
+import { EditTaskModal } from './edit-task-modal'
 
 interface TaskListProps {
     filterKey: number;
@@ -19,12 +21,22 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const [tasks, setTasks] = useState<TaskData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editingTask, setEditingTask] = useState<TaskData | null>(null);
+    const [areas, setAreas] = useState<SidebarItemData[]>([]);
+    const [projects, setProjects] = useState<SidebarItemData[]>([]);
 
     // Configure sensors for drag interaction
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor)
     );
+
+    // Load sidebar config for areas/projects dropdown
+    useEffect(() => {
+        const config = dataService.getLocalSidebarConfig();
+        setAreas(config.areas || []);
+        setProjects(config.projects || []);
+    }, []);
 
     // Load tasks from service when filterKey, selectedListId, or refreshKey changes
     useEffect(() => {
@@ -112,6 +124,35 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
         }
     };
 
+    const handleEdit = (taskId: string) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            setEditingTask(task);
+        }
+    };
+
+    const handleSave = async (updates: UpdateTaskInput) => {
+        if (!editingTask) return;
+
+        await dataService.updateTask(editingTask.id, updates);
+        setEditingTask(null);
+
+        // Refresh counts and task list
+        if (onCountsChange) {
+            await onCountsChange();
+        }
+    };
+
+    const handleArchive = async (taskId: string) => {
+        await dataService.updateTask(taskId, { status: 'archived' });
+        setEditingTask(null);
+
+        // Refresh counts and task list
+        if (onCountsChange) {
+            await onCountsChange();
+        }
+    };
+
     if (isLoading) {
         return <div className="text-muted-foreground p-4">Loading tasks...</div>;
     }
@@ -147,12 +188,26 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
                                     selected={selectedTaskId === task.id}
                                     onclick={handleTaskClick}
                                     onToggleComplete={handleToggleComplete}
+                                    onEdit={handleEdit}
                                 />
                             </li>
                         ))}
                     </ul>
                 </SortableContext>
             </DndContext>
+
+            {/* Edit Task Modal */}
+            {editingTask && (
+                <EditTaskModal
+                    task={editingTask}
+                    isOpen={true}
+                    onClose={() => setEditingTask(null)}
+                    onSave={handleSave}
+                    onArchive={handleArchive}
+                    areas={areas}
+                    projects={projects}
+                />
+            )}
         </>
     )
 }
