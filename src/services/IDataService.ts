@@ -1,6 +1,7 @@
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
 import type { IconName } from '../utils/iconMapper';
+import type { NoteSection, JournalEntry, CreateSectionInput, UpdateSectionInput, CreateJournalEntryInput, UpdateJournalEntryInput } from '../types/notes';
 
 /**
  * Interface for data service implementations
@@ -97,5 +98,81 @@ export interface IDataService {
    * @returns Promise<void>
    */
   reorderTasks(taskIds: string[]): Promise<void>;
+
+  // Note section operations
+
+  /**
+   * Gets all sections for a project/area
+   * @param listId - The project or area key
+   * @returns Promise<NoteSection[]>
+   */
+  getSections(listId: string): Promise<NoteSection[]>;
+
+  /**
+   * Creates a new section in a project/area
+   * @param listId - The project or area key
+   * @param input - Section data
+   * @returns Promise<NoteSection>
+   */
+  createSection(listId: string, input: CreateSectionInput): Promise<NoteSection>;
+
+  /**
+   * Updates a section
+   * @param listId - The project or area key
+   * @param sectionId - The section ID
+   * @param updates - Partial section data
+   * @returns Promise<NoteSection>
+   */
+  updateSection(listId: string, sectionId: string, updates: UpdateSectionInput): Promise<NoteSection>;
+
+  /**
+   * Deletes a section
+   * @param listId - The project or area key
+   * @param sectionId - The section ID
+   * @returns Promise<void>
+   */
+  deleteSection(listId: string, sectionId: string): Promise<void>;
+
+  /**
+   * Reorders sections within a project/area
+   * @param listId - The project or area key
+   * @param sectionIds - Array of section IDs in new order
+   * @returns Promise<void>
+   */
+  reorderSections(listId: string, sectionIds: string[]): Promise<void>;
+
+  // Journal entry operations
+
+  /**
+   * Gets all journal entries for a project/area
+   * @param listId - The project or area key
+   * @returns Promise<JournalEntry[]>
+   */
+  getJournalEntries(listId: string): Promise<JournalEntry[]>;
+
+  /**
+   * Creates a new journal entry
+   * @param listId - The project or area key
+   * @param input - Entry data
+   * @returns Promise<JournalEntry>
+   */
+  createJournalEntry(listId: string, input: CreateJournalEntryInput): Promise<JournalEntry>;
+
+  /**
+   * Updates a journal entry
+   * @param listId - The project or area key
+   * @param entryId - The entry ID
+   * @param updates - Entry data
+   * @returns Promise<JournalEntry>
+   */
+  updateJournalEntry(listId: string, entryId: string, updates: UpdateJournalEntryInput): Promise<JournalEntry>;
+
+  /**
+   * Deletes a journal entry
+   * @param listId - The project or area key
+   * @param entryId - The entry ID
+   * @returns Promise<void>
+   */
+  deleteJournalEntry(listId: string, entryId: string): Promise<void>;
 
 }
