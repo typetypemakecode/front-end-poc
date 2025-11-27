@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, type KeyboardEvent } from 'react'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { dataService } from '../services/dataService'
@@ -22,6 +22,12 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
   const [priority, setPriority] = useState<TaskPriority>('low')
   const [dueDate, setDueDate] = useState<Date | undefined>()
   const [showCalendar, setShowCalendar] = useState(false)
+
+  // Ref to track modal state for use in event handlers (avoids stale closure)
+  const isModalOpenRef = useRef(isModalOpen)
+  useEffect(() => {
+    isModalOpenRef.current = isModalOpen
+  }, [isModalOpen])
 
   /**
    * Get context-aware placeholder text based on selected list
@@ -183,8 +189,9 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
       return
     }
 
-    // Enter - Quick creation
-    if (e.key === 'Enter' && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
+    // Enter - Quick creation (only when modal is NOT open)
+    // Use ref to avoid stale closure issue
+    if (e.key === 'Enter' && !e.shiftKey && !e.metaKey && !e.ctrlKey && !isModalOpenRef.current) {
       e.preventDefault()
       await createTask()
       return
@@ -219,18 +226,20 @@ export function QuickAddTask({ selectedListId, onTaskCreated }: QuickAddTaskProp
 
   return (
     <>
-      {/* Title Input - Always Visible */}
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={handleTitleKeyDown}
-        placeholder={getPlaceholder()}
-        className="w-full px-3 py-2 bg-background border border-border rounded-md
-                   focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
-                   placeholder:text-muted-foreground"
-        aria-label="Quick add task"
-      />
+      {/* Title Input - Hidden when modal is open to prevent interaction */}
+      {!isModalOpen && (
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleTitleKeyDown}
+          placeholder={getPlaceholder()}
+          className="w-full px-3 py-2 bg-background border border-border rounded-md
+                     focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                     placeholder:text-muted-foreground"
+          aria-label="Quick add task"
+        />
+      )}
 
       {/* Modal for detailed task creation */}
       <Modal
