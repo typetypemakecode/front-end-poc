@@ -4,6 +4,8 @@ import TaskList from './task-list';
 import { dataService } from '../services/dataService';
 import type { TaskCounts, TaskData } from '../types/task';
 import { filterTasksByList } from '../utils/taskFilters';
+import { NotesPanel } from './notes-panel';
+import { JournalView } from './journal-view';
 
 interface MainContentProps {
     refreshKey?: number;
@@ -14,6 +16,11 @@ interface MainContentProps {
 export default function MainContent({ refreshKey, selectedListId = null, onDataChange }: MainContentProps) {
     const [selectedFilterKey, setSelectedFilterKey] = useState<number>(1);
     const [counts, setCounts] = useState<TaskCounts>({ all: 0, active: 0, completed: 0, archived: 0 });
+    const [viewMode, setViewMode] = useState<'tasks' | 'journal'>('tasks');
+    const [selectedListTitle, setSelectedListTitle] = useState<string>('');
+
+    // Check if selected list is an area or project (not a smart list)
+    const isAreaOrProject = selectedListId && !['inbox', 'today', 'upcoming', 'past_due', 'tags', 'anytime', 'someday', 'logbook'].includes(selectedListId);
 
     const loadCounts = useCallback(async () => {
         try {
@@ -46,6 +53,19 @@ export default function MainContent({ refreshKey, selectedListId = null, onDataC
         loadCounts();
     }, [refreshKey, loadCounts]);
 
+    // Load selected list title and reset view mode when list changes
+    useEffect(() => {
+        setViewMode('tasks');
+        if (selectedListId) {
+            const config = dataService.getLocalSidebarConfig();
+            const area = config.areas.find(a => a.key === selectedListId);
+            const project = config.projects.find(p => p.key === selectedListId);
+            setSelectedListTitle(area?.title || project?.title || '');
+        } else {
+            setSelectedListTitle('');
+        }
+    }, [selectedListId]);
+
     const handleCountsChange = async () => {
         await loadCounts();
         // Notify parent to refresh sidebar
@@ -60,59 +80,82 @@ export default function MainContent({ refreshKey, selectedListId = null, onDataC
 
   return (
     <div className='h-full px-4 py-4 flex flex-col overflow-hidden'>
-        <div className="flex flex-row text-muted-foreground text-xl" role="toolbar" aria-label="Task filters and actions">
-            <div className="flex items-center gap-3" role="group" aria-label="Status filters">
-                <button
-                    key={1}
-                    type="button"
-                    className={`px-3 py-1 text-sm ${selectedFilterKey === 1 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
-                    onClick={() => handleFilterChange(1)}
-                    aria-pressed={selectedFilterKey === 1}
-                    aria-label={`Show all tasks (${counts.all})`}
-                >
-                    All ({counts.all})
-                </button>
-                <button
-                    key={2}
-                    type="button"
-                    className={`px-3 py-1 text-sm ${selectedFilterKey === 2 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
-                    onClick={() => handleFilterChange(2)}
-                    aria-pressed={selectedFilterKey === 2}
-                    aria-label={`Show active tasks (${counts.active})`}
-                >
-                    Active ({counts.active})
-                </button>
-                <button
-                    key={3}
-                    type="button"
-                    className={`px-3 py-1 text-sm ${selectedFilterKey === 3 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
-                    onClick={() => handleFilterChange(3)}
-                    aria-pressed={selectedFilterKey === 3}
-                    aria-label={`Show completed tasks (${counts.completed})`}
-                >
-                    Completed ({counts.completed})
-                </button>
-            </div>
-            <div className="justify-end flex flex-1 gap-4" role="group" aria-label="Task actions">
-                <button
-                    type="button"
-                    className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
-                    aria-label="Filter tasks"
-                >
-                    <Funnel className="w-6 h-6" aria-hidden="true" />
-                </button>
-                <button
-                    type="button"
-                    className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
-                    aria-label="Sort tasks"
-                >
-                    <ArrowUpNarrowWide className="w-6 h-6" aria-hidden="true" />
-                </button>
-            </div>
-        </div>
-        <div className='flex-1 overflow-y-auto px-4 space-y-2 min-h-0' role="region" aria-label="Task list">
-            <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} refreshKey={refreshKey} onCountsChange={handleCountsChange} />
-        </div>
+        {/* Journal View */}
+        {viewMode === 'journal' && selectedListId && selectedListTitle && (
+            <JournalView
+                listId={selectedListId}
+                listTitle={selectedListTitle}
+                onBack={() => setViewMode('tasks')}
+            />
+        )}
+
+        {/* Tasks View */}
+        {viewMode === 'tasks' && (
+            <>
+                {/* Notes Panel - only show for areas/projects */}
+                {isAreaOrProject && selectedListTitle && (
+                    <NotesPanel
+                        listId={selectedListId}
+                        listTitle={selectedListTitle}
+                        onOpenJournal={() => setViewMode('journal')}
+                    />
+                )}
+
+                <div className="flex flex-row text-muted-foreground text-xl" role="toolbar" aria-label="Task filters and actions">
+                    <div className="flex items-center gap-3" role="group" aria-label="Status filters">
+                        <button
+                            key={1}
+                            type="button"
+                            className={`px-3 py-1 text-sm ${selectedFilterKey === 1 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                            onClick={() => handleFilterChange(1)}
+                            aria-pressed={selectedFilterKey === 1}
+                            aria-label={`Show all tasks (${counts.all})`}
+                        >
+                            All ({counts.all})
+                        </button>
+                        <button
+                            key={2}
+                            type="button"
+                            className={`px-3 py-1 text-sm ${selectedFilterKey === 2 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                            onClick={() => handleFilterChange(2)}
+                            aria-pressed={selectedFilterKey === 2}
+                            aria-label={`Show active tasks (${counts.active})`}
+                        >
+                            Active ({counts.active})
+                        </button>
+                        <button
+                            key={3}
+                            type="button"
+                            className={`px-3 py-1 text-sm ${selectedFilterKey === 3 ? 'text-background bg-accent shadow-glow-emerald' : ' text-muted-foreground hover:bg-muted'} rounded`}
+                            onClick={() => handleFilterChange(3)}
+                            aria-pressed={selectedFilterKey === 3}
+                            aria-label={`Show completed tasks (${counts.completed})`}
+                        >
+                            Completed ({counts.completed})
+                        </button>
+                    </div>
+                    <div className="justify-end flex flex-1 gap-4" role="group" aria-label="Task actions">
+                        <button
+                            type="button"
+                            className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
+                            aria-label="Filter tasks"
+                        >
+                            <Funnel className="w-6 h-6" aria-hidden="true" />
+                        </button>
+                        <button
+                            type="button"
+                            className='p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-accent'
+                            aria-label="Sort tasks"
+                        >
+                            <ArrowUpNarrowWide className="w-6 h-6" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+                <div className='flex-1 overflow-y-auto px-4 space-y-2 min-h-0' role="region" aria-label="Task list">
+                    <TaskList filterKey={selectedFilterKey} selectedListId={selectedListId || null} refreshKey={refreshKey} onCountsChange={handleCountsChange} />
+                </div>
+            </>
+        )}
     </div>
   )
 }
