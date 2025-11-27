@@ -68,6 +68,11 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
 
     const handleTaskClick = (id: string) => {
         setSelectedTaskId(id);
+        // Open edit modal when task is clicked
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            setEditingTask(task);
+        }
     }
 
     const handleToggleComplete = async (id: string) => {
@@ -121,13 +126,6 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
             console.error('Failed to reorder tasks:', error);
             // Revert on error
             setTasks(tasks);
-        }
-    };
-
-    const handleEdit = (taskId: string) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            setEditingTask(task);
         }
     };
 
@@ -188,7 +186,6 @@ export default function TaskList({ filterKey, selectedListId, refreshKey, onCoun
                                     selected={selectedTaskId === task.id}
                                     onclick={handleTaskClick}
                                     onToggleComplete={handleToggleComplete}
-                                    onEdit={handleEdit}
                                 />
                             </li>
                         ))}
