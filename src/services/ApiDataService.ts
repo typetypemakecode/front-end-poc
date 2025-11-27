@@ -1,6 +1,7 @@
 import type { IDataService } from './IDataService';
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
+import type { NoteSection, JournalEntry, CreateSectionInput, UpdateSectionInput, CreateJournalEntryInput, UpdateJournalEntryInput } from '../types/notes';
 import type { IconName } from '../utils/iconMapper';
 import sidebarConfigData from '../data/initialSidebarConfig.json';
 import {
@@ -369,5 +370,47 @@ export class ApiDataService implements IDataService {
       console.error('❌ Failed to reorder tasks via API:', error);
       throw error;
     }
+  }
+
+  // Note section methods - stub implementations (not yet implemented in API)
+
+  async getSections(_listId: string): Promise<NoteSection[]> {
+    console.warn('Note sections not yet implemented in API');
+    return [];
+  }
+
+  async createSection(_listId: string, _input: CreateSectionInput): Promise<NoteSection> {
+    throw new Error('Note sections not yet implemented in API');
+  }
+
+  async updateSection(_listId: string, _sectionId: string, _updates: UpdateSectionInput): Promise<NoteSection> {
+    throw new Error('Note sections not yet implemented in API');
+  }
+
+  async deleteSection(_listId: string, _sectionId: string): Promise<void> {
+    throw new Error('Note sections not yet implemented in API');
+  }
+
+  async reorderSections(_listId: string, _sectionIds: string[]): Promise<void> {
+    throw new Error('Note sections not yet implemented in API');
+  }
+
+  // Journal entry methods - stub implementations (not yet implemented in API)
+
+  async getJournalEntries(_listId: string): Promise<JournalEntry[]> {
+    console.warn('Journal entries not yet implemented in API');
+    return [];
+  }
+
+  async createJournalEntry(_listId: string, _input: CreateJournalEntryInput): Promise<JournalEntry> {
+    throw new Error('Journal entries not yet implemented in API');
+  }
+
+  async updateJournalEntry(_listId: string, _entryId: string, _updates: UpdateJournalEntryInput): Promise<JournalEntry> {
+    throw new Error('Journal entries not yet implemented in API');
+  }
+
+  async deleteJournalEntry(_listId: string, _entryId: string): Promise<void> {
+    throw new Error('Journal entries not yet implemented in API');
   }
 }
