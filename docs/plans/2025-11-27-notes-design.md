@@ -205,24 +205,24 @@ Notes changes don't affect task counts, so no need to trigger global `refreshKey
 
 ## Implementation Phases
 
-### Phase 1: Data layer + basic sections
-- Add `NoteSection` and `JournalEntry` types
-- Extend `IDataService` interface with note methods
-- Implement in `LocalDataService`
-- Create `NotesPanel` and `NoteSection` components
-- Basic markdown textarea editing (no preview yet)
+### Phase 1: Data layer + basic sections ✅ COMPLETE
+- [x] Add `NoteSection` and `JournalEntry` types
+- [x] Extend `IDataService` interface with note methods
+- [x] Implement in `LocalDataService`
+- [x] Create `NotesPanel` and `NoteSection` components
+- [x] Basic markdown textarea editing (no preview yet)
 
-### Phase 2: Journal view
-- Add `viewMode` state and navigation
-- Create `JournalView` and `JournalEntry` components
-- Journal icon in project/area header
-- Back navigation to tasks
+### Phase 2: Journal view ✅ COMPLETE
+- [x] Add `viewMode` state and navigation
+- [x] Create `JournalView` and `JournalEntry` components
+- [x] Journal icon in project/area header
+- [x] Back navigation to tasks
 
-### Phase 3: Polish
-- `MarkdownRenderer` for rendering content
-- Collapse persistence (localStorage)
-- Section reordering (drag-and-drop via @dnd-kit)
-- Empty states and loading states
+### Phase 3: Polish (partial)
+- [ ] `MarkdownRenderer` for rendering content
+- [x] Collapse persistence (localStorage)
+- [ ] Section reordering (drag-and-drop via @dnd-kit)
+- [x] Empty states and loading states
 
 ### Phase 4: Future enhancements (not in scope)
 - Block-based editor (TipTap/BlockNote)
