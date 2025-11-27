@@ -1,6 +1,7 @@
 import type { IDataService } from './IDataService';
 import type { SidebarConfigData, SidebarItemData, Priority } from '../types/sidebar';
 import type { TaskData, CreateTaskInput, UpdateTaskInput, TaskCounts } from '../types/task';
+import type { NoteSection, JournalEntry, CreateSectionInput, UpdateSectionInput, CreateJournalEntryInput, UpdateJournalEntryInput } from '../types/notes';
 import type { IconName } from '../utils/iconMapper';
 import sidebarConfigData from '../data/initialSidebarConfig.json';
 import initialTasks from '../data/initialTasks.json';
@@ -367,6 +368,202 @@ export class LocalDataService implements IDataService {
    */
   private generateTaskId(): string {
     return `task-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  /**
+   * Finds a project or area by key
+   */
+  private findListItem(listId: string): SidebarItemData | null {
+    const area = this.localData.areas.find(a => a.key === listId);
+    if (area) return area;
+    const project = this.localData.projects.find(p => p.key === listId);
+    return project || null;
+  }
+
+  /**
+   * Generates a unique ID for a section
+   */
+  private generateSectionId(): string {
+    return `section-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  /**
+   * Generates a unique ID for a journal entry
+   */
+  private generateJournalEntryId(): string {
+    return `journal-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  // Note section methods
+
+  async getSections(listId: string): Promise<NoteSection[]> {
+    const item = this.findListItem(listId);
+    if (!item) {
+      return [];
+    }
+    const sections = item.sections || [];
+    // Sort by order
+    return [...sections].sort((a, b) => a.order - b.order);
+  }
+
+  async createSection(listId: string, input: CreateSectionInput): Promise<NoteSection> {
+    const item = this.findListItem(listId);
+    if (!item) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    if (!item.sections) {
+      item.sections = [];
+    }
+
+    const now = new Date().toISOString();
+    const maxOrder = item.sections.reduce((max, s) => Math.max(max, s.order), -1);
+
+    const newSection: NoteSection = {
+      id: this.generateSectionId(),
+      title: input.title,
+      content: input.content || '',
+      order: maxOrder + 1,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    item.sections.push(newSection);
+    this.persistLocalData();
+
+    return { ...newSection };
+  }
+
+  async updateSection(listId: string, sectionId: string, updates: UpdateSectionInput): Promise<NoteSection> {
+    const item = this.findListItem(listId);
+    if (!item || !item.sections) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    const sectionIndex = item.sections.findIndex(s => s.id === sectionId);
+    if (sectionIndex === -1) {
+      throw new Error(`Section with id ${sectionId} not found`);
+    }
+
+    const updatedSection: NoteSection = {
+      ...item.sections[sectionIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    item.sections[sectionIndex] = updatedSection;
+    this.persistLocalData();
+
+    return { ...updatedSection };
+  }
+
+  async deleteSection(listId: string, sectionId: string): Promise<void> {
+    const item = this.findListItem(listId);
+    if (!item || !item.sections) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    const sectionIndex = item.sections.findIndex(s => s.id === sectionId);
+    if (sectionIndex === -1) {
+      throw new Error(`Section with id ${sectionId} not found`);
+    }
+
+    item.sections.splice(sectionIndex, 1);
+    this.persistLocalData();
+  }
+
+  async reorderSections(listId: string, sectionIds: string[]): Promise<void> {
+    const item = this.findListItem(listId);
+    if (!item || !item.sections) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    sectionIds.forEach((id, index) => {
+      const section = item.sections!.find(s => s.id === id);
+      if (section) {
+        section.order = index;
+        section.updatedAt = new Date().toISOString();
+      }
+    });
+
+    this.persistLocalData();
+  }
+
+  // Journal entry methods
+
+  async getJournalEntries(listId: string): Promise<JournalEntry[]> {
+    const item = this.findListItem(listId);
+    if (!item) {
+      return [];
+    }
+    const entries = item.journal || [];
+    // Sort by createdAt descending (newest first)
+    return [...entries].sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async createJournalEntry(listId: string, input: CreateJournalEntryInput): Promise<JournalEntry> {
+    const item = this.findListItem(listId);
+    if (!item) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    if (!item.journal) {
+      item.journal = [];
+    }
+
+    const now = new Date().toISOString();
+
+    const newEntry: JournalEntry = {
+      id: this.generateJournalEntryId(),
+      content: input.content,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    item.journal.push(newEntry);
+    this.persistLocalData();
+
+    return { ...newEntry };
+  }
+
+  async updateJournalEntry(listId: string, entryId: string, updates: UpdateJournalEntryInput): Promise<JournalEntry> {
+    const item = this.findListItem(listId);
+    if (!item || !item.journal) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    const entryIndex = item.journal.findIndex(e => e.id === entryId);
+    if (entryIndex === -1) {
+      throw new Error(`Journal entry with id ${entryId} not found`);
+    }
+
+    const updatedEntry: JournalEntry = {
+      ...item.journal[entryIndex],
+      content: updates.content,
+      updatedAt: new Date().toISOString()
+    };
+
+    item.journal[entryIndex] = updatedEntry;
+    this.persistLocalData();
+
+    return { ...updatedEntry };
+  }
+
+  async deleteJournalEntry(listId: string, entryId: string): Promise<void> {
+    const item = this.findListItem(listId);
+    if (!item || !item.journal) {
+      throw new Error(`List with id ${listId} not found`);
+    }
+
+    const entryIndex = item.journal.findIndex(e => e.id === entryId);
+    if (entryIndex === -1) {
+      throw new Error(`Journal entry with id ${entryId} not found`);
+    }
+
+    item.journal.splice(entryIndex, 1);
+    this.persistLocalData();
   }
 
   /**

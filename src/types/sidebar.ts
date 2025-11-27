@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { IconName } from "../utils/iconMapper";
 import type { Priority } from '../schemas';
+import type { NoteSection, JournalEntry } from './notes';
 
 // Re-export shared Priority type from schemas
 export type { Priority };
@@ -15,6 +16,8 @@ export interface SidebarItemData {
     priority: Priority;
     dueDate?: string;
     showCount?: boolean;
+    sections?: NoteSection[];
+    journal?: JournalEntry[];
 }
 
 export interface SidebarConfigData {
