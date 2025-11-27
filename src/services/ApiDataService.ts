@@ -373,6 +373,7 @@ export class ApiDataService implements IDataService {
   }
 
   // Note section methods - stub implementations (not yet implemented in API)
+  /* eslint-disable @typescript-eslint/no-unused-vars */
 
   async getSections(_listId: string): Promise<NoteSection[]> {
     console.warn('Note sections not yet implemented in API');
@@ -413,4 +414,6 @@ export class ApiDataService implements IDataService {
   async deleteJournalEntry(_listId: string, _entryId: string): Promise<void> {
     throw new Error('Journal entries not yet implemented in API');
   }
+
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
